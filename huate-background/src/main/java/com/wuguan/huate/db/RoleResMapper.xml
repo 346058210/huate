@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuguan.huate.db.RoleResMapper">
+	<delete id="del">
+		DELETE FROM ht_role_res WHERE role_id=#{roleId}
+	</delete>
+	
+	<insert id="addBatch">
+		INSERT INTO ht_role_res (role_id,res_id) VALUES
+		<foreach collection="reses" item="resId" index="index" separator=",">
+			(#{roleId}, #{resId})
+		</foreach>
+	</insert>
+</mapper>

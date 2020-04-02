@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuguan.huate.db.ResidentMapper">
+	<insert id="addBatch">
+		INSERT INTO ht_resident (`name`,birth_date,sex,house_no,phone,movein_time,relation,idcard) VALUES
+		<foreach collection="residents" item="resident" index="index" separator=",">
+			(#{resident.name},#{resident.birthDate},#{resident.sex},#{resident.houseNo},#{resident.phone},#{resident.moveinTime},
+			#{resident.relation},#{resident.idcard})
+		</foreach>
+	</insert>
+	<insert id="addData">
+		INSERT INTO ht_resident
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="name!=null and name!=''">
+				name,
+			</if>
+			<if test="birthDate!=null and birthDate!=''">
+				birth_date,
+			</if>
+			<if test="sex!=null and sex!=''">
+				sex,
+			</if>
+			<if test="houseNo!=null and houseNo!=''">
+				house_no,
+			</if>
+			<if test="phone!=null and phone!=''">
+				phone,
+			</if>
+			<if test="moveinTime!=null and moveinTime!=''">
+				movein_time,
+			</if>
+			<if test="relation!=null and relation!=''">
+				relation,
+			</if>
+			<if test="idcard!=null and idcard!=''">
+				idcard
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="name!=null and name!=''">
+				#{name},
+			</if>
+			<if test="birthDate!=null and birthDate!=''">
+				#{birthDate},
+			</if>
+			<if test="sex!=null and sex!=''">
+				#{sex},
+			</if>
+			<if test="houseNo!=null and houseNo!=''">
+				#{houseNo},
+			</if>
+			<if test="phone!=null and phone!=''">
+				#{phone},
+			</if>
+			<if test="moveinTime!=null and moveinTime!=''">
+				#{moveinTime},
+			</if>
+			<if test="relation!=null and relation!=''">
+				#{relation},
+			</if>
+			<if test="idcard!=null and idcard!=''">
+				#{idcard}
+			</if>
+		</trim>
+	</insert>
+	<update id="updateData">
+		UPDATE ht_resident
+		<set>
+			<if test="name!=null and name!=''">
+				name=#{name},
+			</if>
+			<if test="birthDate!=null and birthDate!=''">
+				birth_date=#{birthDate},
+			</if>
+			<if test="sex!=null and sex!=''">
+				sex=#{sex},
+			</if>
+			<if test="houseNo!=null and houseNo!=''">
+				house_no=#{houseNo},
+			</if>
+			<if test="phone!=null and phone!=''">
+				phone=#{phone},
+			</if>
+			<if test="moveinTime!=null and moveinTime!=''">
+				movein_time=#{moveinTime},
+			</if>
+			<if test="relation!=null and relation!=''">
+				relation=#{relation},
+			</if>
+			<if test="idcard!=null and idcard!=''">
+				idcard=#{idcard}
+			</if>
+		</set>
+		WHERE id=#{id}
+	</update>
+	<update id="delData">
+		UPDATE ht_resident SET is_del=1 WHERE id=#{id}
+	</update>
+	<update id="delByHouseNo">
+		UPDATE ht_resident SET is_del=1 WHERE house_no=#{houseNo}
+	</update>
+	<select id="isExist" resultType="java.lang.Integer">
+		SELECT 1 FROM ht_resident
+		<where>
+			<if test="idcard!=null and idcard!=''">
+				idcard=#{idcard}
+			</if>
+			<if test="id!=null and idcard!=''">
+				AND id!=#{id}
+			</if>
+		</where>
+	</select>
+	<select id="getResidents" resultType="com.wuguan.huate.bean.entity.Resident">
+		SELECT id,`name`,birth_date birthDate,sex,house_no houseNo,phone,movein_time moveinTime,relation,idcard 
+		FROM ht_resident WHERE is_del=0 LIMIT #{startRow},#{pageSize}
+	</select>
+	<select id="getResidentsByHouseNo" resultType="com.wuguan.huate.bean.entity.Resident">
+		SELECT id,`name`,birth_date birthDate,sex,house_no houseNo,phone,movein_time moveinTime,relation,idcard 
+		FROM ht_resident WHERE is_del=0 AND house_no=#{houseNo}
+	</select>
+	
+</mapper>

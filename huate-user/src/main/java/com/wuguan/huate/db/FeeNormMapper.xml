@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuguan.huate.db.FeeNormMapper">
+	<insert id="addData">
+		INSERT INTO ht_fee_norm
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="typeName!=null and typeName!=''">
+				type_name,
+			</if>
+			<if test="pid!=null and pid!=''">
+				pid,
+			</if>
+			<if test="type!=null and type!=''">
+				type,
+			</if>
+			<if test="price!=null and price!=''">
+				price,
+			</if>
+			<if test="unit!=null and unit!=''">
+				unit,
+			</if>
+			<if test="cycle!=null and cycle!=''">
+				cycle,
+			</if>
+			<if test="weight!=null and weight!=''">
+				weight,
+			</if>
+			<if test="mtc!=null and mtc!=''">
+				mtc,
+			</if>
+			<if test="remark!=null and remark!=''">
+				remark
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="typeName!=null and typeName!=''">
+				#{typeName},
+			</if>
+			<if test="pid!=null and pid!=''">
+				#{pid},
+			</if>
+			<if test="type!=null and type!=''">
+				#{type},
+			</if>
+			<if test="price!=null and price!=''">
+				#{price},
+			</if>
+			<if test="unit!=null and unit!=''">
+				#{unit},
+			</if>
+			<if test="cycle!=null and cycle!=''">
+				#{cycle},
+			</if>
+			<if test="weight!=null and weight!=''">
+				#{weight},
+			</if>
+			<if test="mtc!=null and mtc!=''">
+				#{mtc},
+			</if>
+			<if test="remark!=null and remark!=''">
+				#{remark}
+			</if>
+		</trim>
+	</insert>
+	<update id="updateData">
+		UPDATE ht_fee_norm
+		<set>
+			<if test="typeName!=null and typeName!=''">
+				type_name=#{typeName},
+			</if>
+			<if test="pid!=null and pid!=''">
+				pid=#{pid},
+			</if>
+			<if test="type!=null and type!=''">
+				type=#{type},
+			</if>
+			<if test="price!=null and price!=''">
+				price=#{price},
+			</if>
+			<if test="unit!=null and unit!=''">
+				unit=#{unit},
+			</if>
+			<if test="cycle!=null and cycle!=''">
+				cycle=#{cycle},
+			</if>
+			<if test="weight!=null and weight!=''">
+				weight=#{weight},
+			</if>
+			<if test="mtc!=null and mtc!=''">
+				mtc=#{mtc},
+			</if>
+			<if test="remark!=null and remark!=''">
+				remark=#{remark}
+			</if>
+		</set>
+		WHERE id=#{id}
+	</update>
+	<delete id="del">
+		DELETE FROM ht_fee_norm WHERE id=#{id}
+	</delete>
+	
+	<select id="getFeeNorms" resultType="com.wuguan.huate.bean.entity.FeeNorm">
+		SELECT id,type_name typeName,pid,type,price,unit,cycle,weight,mtc,remark FROM ht_fee_norm ORDER BY id,weight
+	</select>
+	<select id="detailData" resultType="com.wuguan.huate.bean.entity.FeeNorm">
+		SELECT id,type_name typeName,pid,type,price,unit,cycle,weight,mtc,remark FROM ht_fee_norm WHERE id=#{id}
+	</select>
+	<select id="pageData" resultType="com.wuguan.huate.bean.entity.FeeNorm">
+		SELECT id,type_name typeName,pid,type,price,unit,cycle,weight,mtc,remark FROM ht_fee_norm
+		<where>
+			<if test="typeName!=null and typeName!=''">
+				type_name=#{typeName}
+			</if>
+			<if test="pid!=null and pid!=''">
+				AND pid=#{pid}
+			</if>
+			<if test="mtc!=null and mtc!=''">
+				AND mtc=#{mtc}
+			</if>
+		</where>
+		ORDER BY id,pid,weight ASC
+	</select>
+	<select id="isExist" resultType="java.lang.Integer">
+		SELECT 1 FROM ht_fee_norm
+		<where>
+			<if test="typeName!=null and typeName!=''">
+				type_name=#{typeName}
+			</if>
+			<if test="id!=null and id!=''">
+				AND id!=#{id}
+			</if>
+		</where>
+	</select>
+
+	<select id="isUse" resultType="java.lang.Integer">
+		SELECT 1 FROM (
+			SELECT water_type_id id FROM ht_house GROUP BY water_type_id
+			UNION ALL
+			SELECT electic_type_id id FROM ht_house GROUP BY electic_type_id
+			UNION ALL
+			SELECT rubbish_type_id id FROM ht_house GROUP BY rubbish_type_id
+			UNION ALL
+			SELECT property_type_id id FROM ht_house GROUP BY property_type_id
+			UNION ALL
+			SELECT norm_id id FROM ht_park GROUP BY norm_id
+		) t WHERE t.id=#{id}
+	</select>
+</mapper>

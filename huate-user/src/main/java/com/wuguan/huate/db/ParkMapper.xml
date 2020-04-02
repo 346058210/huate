@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuguan.huate.db.ParkMapper">
+	<insert id="addBatch">
+		INSERT INTO ht_park (house_no,car_no,park_no,owner_one,owner_two,phone_one,phone_two,type,due_time,norm_id,area,genre) VALUES
+		<foreach collection="parks" item="park" index="index" separator=",">
+			(#{park.houseNo},#{park.carNo},#{park.parkNo},#{park.ownerOne},#{park.ownerTwo},#{park.phoneOne},#{park.phoneTwo},
+			#{park.type},#{park.dueTime},#{park.normId},#{park.area},#{park.genre})
+		</foreach>
+	</insert>
+	<insert id="addData">
+		INSERT INTO ht_park
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="houseNo!=null and houseNo!=''">
+				house_no,
+			</if>
+			<if test="carNo!=null and carNo!=''">
+				car_no,
+			</if>
+			<if test="parkNo!=null and parkNo!=''">
+				park_no,
+			</if>
+			<if test="ownerOne!=null and ownerOne!=''">
+				owner_one,
+			</if>
+			<if test="ownerTwo!=null and ownerTwo!=''">
+				owner_two,
+			</if>
+			<if test="phoneOne!=null and phoneOne!=''">
+				phone_one,
+			</if>
+			<if test="phoneTwo!=null and phoneTwo!=''">
+				phone_two,
+			</if>
+			<if test="type!=null and type!=''">
+				type,
+			</if>
+			<if test="dueTime!=null and dueTime!=''">
+				due_time,
+			</if>
+			<if test="normId!=null and normId!=''">
+				norm_id,
+			</if>
+			<if test="area!=null and area!=''">
+				area,
+			</if>
+			<if test="genre!=null and genre!=''">
+				genre
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="houseNo!=null and houseNo!=''">
+				#{houseNo},
+			</if>
+			<if test="carNo!=null and carNo!=''">
+				#{carNo},
+			</if>
+			<if test="parkNo!=null and parkNo!=''">
+				#{parkNo},
+			</if>
+			<if test="ownerOne!=null and ownerOne!=''">
+				#{ownerOne},
+			</if>
+			<if test="ownerTwo!=null and ownerTwo!=''">
+				#{ownerTwo},
+			</if>
+			<if test="phoneOne!=null and phoneOne!=''">
+				#{phoneOne},
+			</if>
+			<if test="phoneTwo!=null and phoneTwo!=''">
+				#{phoneTwo},
+			</if>
+			<if test="type!=null and type!=''">
+				#{type},
+			</if>
+			<if test="dueTime!=null and dueTime!=''">
+				#{dueTime},
+			</if>
+			<if test="normId!=null and normId!=''">
+				#{normId},
+			</if>
+			<if test="area!=null and area!=''">
+				#{area},
+			</if>
+			<if test="genre!=null and genre!=''">
+				#{genre}
+			</if>
+		</trim>
+	</insert>
+	<update id="updateDueTime">
+		UPDATE ht_park SET due_time=#{dueTime} WHERE id=#{id}
+	</update>
+	<update id="updateData">
+		UPDATE ht_park
+		<set>
+			<if test="houseNo!=null and houseNo!=''">
+				house_no=#{houseNo},
+			</if>
+			<if test="carNo!=null and carNo!=''">
+				car_no=#{carNo},
+			</if>
+			<if test="parkNo!=null and parkNo!=''">
+				park_no=#{parkNo},
+			</if>
+			<if test="ownerOne!=null and ownerOne!=''">
+				owner_one=#{ownerOne},
+			</if>
+			<if test="ownerTwo!=null and ownerTwo!=''">
+				owner_two=#{ownerTwo},
+			</if>
+			<if test="phoneOne!=null and phoneOne!=''">
+				phone_one=#{phoneOne},
+			</if>
+			<if test="phoneTwo!=null and phoneTwo!=''">
+				phone_two=#{phoneTwo},
+			</if>
+			<if test="type!=null and type!=''">
+				type=#{type},
+			</if>
+			<if test="dueTime!=null and dueTime!=''">
+				due_time=#{dueTime},
+			</if>
+			<if test="normId!=null and normId!=''">
+				norm_id=#{normId},
+			</if>
+			<if test="area!=null and area!=''">
+				area=#{area},
+			</if>
+			<if test="genre!=null and genre!=''">
+				genre=#{genre},
+			</if>
+			<if test="noticeTime!=null and noticeTime!=''">
+				notice_time=#{noticeTime},
+			</if>
+			<if test="isDel!=null and isDel!=''">
+				is_del=#{isDel}
+			</if>
+		</set>
+		WHERE id=#{id}
+	</update>
+	<update id="delData">
+		UPDATE ht_park SET is_del=1 WHERE id=#{id}
+	</update>
+	<select id="detailData" resultType="com.wuguan.huate.bean.entity.Park">
+		SELECT id,house_no houseNo,car_no carNo,park_no parkNo,owner_one ownerOne,owner_two ownerTwo,
+		phone_one phoneOne,phone_two phoneTwo,type,due_time dueTime,norm_id normId,area,genre
+		FROM ht_park WHERE id=#{id}
+	</select>
+	<select id="pageData" resultType="com.wuguan.huate.bean.entity.Park">
+		SELECT id,house_no houseNo,car_no carNo,park_no parkNo,owner_one ownerOne,owner_two ownerTwo,
+		phone_one phoneOne,phone_two phoneTwo,type,due_time dueTime,norm_id normId,area,genre
+		FROM ht_park
+		<where>
+			is_del=0
+			<if test="type!=null and type!=''">
+				AND type=#{type}
+			</if>
+			<if test="genre!=null and genre!=''">
+				AND genre=#{genre}
+			</if>
+			<if test="content!=null and content!=''">
+				AND CONCAT_WS(',',owner_one,owner_one,park_no,car_no) LIKE CONCAT('%',#{content},'%')
+			</if>
+		</where>
+		ORDER BY id DESC,due_time ASC
+	</select>
+	<select id="getListParks" resultType="com.wuguan.huate.bean.entity.Park">
+		SELECT id,house_no houseNo,car_no carNo,park_no parkNo,owner_one ownerOne,owner_two ownerTwo,
+		phone_one phoneOne,phone_two phoneTwo,type,due_time dueTime,norm_id normId,area,genre
+		FROM ht_park
+		<where>
+			is_del=0
+			<if test="content!=null and content!=''">
+				AND CONCAT_WS(',',owner_one,owner_one,park_no,car_no) LIKE CONCAT('%',#{content},'%')
+			</if>
+			<if test="type!=null and type!=''">
+				AND type=#{type}
+			</if>
+			<if test="genre!=null and genre!=''">
+				AND genre=#{genre}
+			</if>
+		</where>
+		ORDER BY id ASC
+	</select>
+	<select id="getBindPark" resultType="com.wuguan.huate.bean.entity.Park">
+		SELECT p.id,p.house_no houseNo,p.car_no carNo,p.park_no parkNo,p.owner_one ownerOne,p.owner_two ownerTwo,
+		p.phone_one phoneOne,p.phone_two phoneTwo,p.type,
+		p.due_time dueTime,p.norm_id normId,p.area,p.genre
+		FROM ht_park p
+		LEFT JOIN ht_user_park up ON p.id=up.park_id
+		LEFT JOIN ht_user u ON u.id=up.user_id
+		WHERE u.openid=#{openid} AND p.is_del=0
+	</select>
+	<select id="getParksByParkNo" resultType="com.wuguan.huate.bean.entity.Park">
+		SELECT id,house_no houseNo,car_no carNo,park_no parkNo,owner_one ownerOne,owner_two ownerTwo,
+		phone_one phoneOne,phone_two phoneTwo,type,due_time dueTime,norm_id normId,area,genre
+		FROM ht_park WHERE park_no=#{parkNo} AND is_del=0
+		
+	</select>
+	<select id="queryParkByCarNo" resultType="com.wuguan.huate.bean.entity.Park">
+		SELECT id,house_no houseNo,car_no carNo,park_no parkNo,owner_one ownerOne,owner_two ownerTwo,
+		phone_one phoneOne,phone_two phoneTwo,type,due_time dueTime,norm_id normId,area,genre
+		FROM ht_park WHERE car_no LIKE CONCAT('%',#{carNo},'%') AND is_del=0
+	</select>
+	<select id="getParksByHouseNo" resultType="com.wuguan.huate.bean.entity.Park">
+		SELECT id,house_no houseNo,car_no carNo,park_no parkNo,owner_one ownerOne,owner_two ownerTwo,
+		phone_one phoneOne,phone_two phoneTwo,type,due_time dueTime,norm_id normId,area,genre
+		FROM ht_park WHERE house_no=#{houseNo} AND is_del=0
+	</select>
+	<select id="isExist" resultType="java.lang.Integer">
+		SELECT 1 FROM ht_park
+		<where>
+			is_del=0
+			<if test="parkNo!=null and parkNo!=''">
+				AND park_no=#{parkNo}
+			</if>
+			<if test="id!=null and id!=''">
+				AND id!=#{id}
+			</if>
+		</where>
+	</select>
+	<select id="getListParksByUserId" resultType="com.wuguan.huate.bean.entity.Park">
+		SELECT p.id,p.house_no houseNo,p.car_no carNo,p.park_no parkNo,p.owner_one ownerOne,p.owner_two ownerTwo,
+		p.phone_one phoneOne,p.phone_two phoneTwo,p.type,p.due_time dueTime,p.norm_id normId,p.area,p.genre FROM ht_park p
+		LEFT JOIN ht_user_park up ON p.id=up.park_id
+		WHERE up.user_id=#{userId}
+	</select>
+	<select id="queryExpirePark" resultType="com.wuguan.huate.bean.vo.ParkM">
+		SELECT 
+			p.id,p.house_no houseNo,p.car_no carNo,p.park_no parkNo,p.owner_one ownerOne,p.owner_two ownerTwo,
+			p.phone_one phoneOne,p.phone_two phoneTwo,p.type,p.due_time dueTime,p.norm_id normId,p.area,p.genre,p.notice_time noticeTime,u.openid
+		FROM ht_park p
+		LEFT JOIN ht_user_park up ON p.id=up.park_id
+		LEFT JOIN ht_user u ON u.id=up.user_id
+		WHERE TIMESTAMPDIFF(DAY,p.due_time,NOW())>3 
+		AND (DATE_FORMAT(p.notice_time,'%Y-%m')!=DATE_FORMAT(NOW(),'%Y-%m') OR p.notice_time IS NULL) AND u.openid IS NOT NULL
+	</select>
+</mapper>

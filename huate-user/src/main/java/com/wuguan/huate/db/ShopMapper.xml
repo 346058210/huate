@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuguan.huate.db.ShopMapper">
+	<select id="getShopsByHouseId" resultType="com.wuguan.huate.bean.entity.Shop">
+		SELECT id,shop_no shopNo,shop_area shopArea,house_id houseId FROM ht_shop WHERE house_id=#{houseId} AND is_del=0
+	</select>
+	<insert id="addBatch">
+		INSERT INTO ht_shop (shop_no,shop_area,house_id) VALUES
+		<foreach collection="shops" item="shop" index="index" separator=",">
+			(#{shop.shopNo},#{shop.shopArea},#{shop.houseId})
+		</foreach>	
+	</insert>
+	<select id="getListShop" resultType="com.wuguan.huate.bean.vo.ShopVo">
+		SELECT
+			p.id,p.shop_no shopNo,p.shop_area shopArea,h.`owner` shopName,h.address,h.sale,h.water_type_id waterTypeId,
+			h.electic_type_id electicTypeId,h.rubbish_type_id rubbishTypeId,h.property_type_id propertyTypeId,
+			h.due_time dueTime,h.remark_name remarkName
+		FROM ht_shop p
+		LEFT JOIN ht_house h ON p.house_id=h.id
+	</select>
+</mapper>

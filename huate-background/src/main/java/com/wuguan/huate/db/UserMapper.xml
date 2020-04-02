@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuguan.huate.db.UserMapper">
+	<select id="isExist" resultType="java.lang.Integer">
+		SELECT 1 FROM ht_user WHERE openid=#{openid}
+	</select>
+	
+	<insert id="addData" keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_user
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="name!=null and name!=''">
+				name,
+			</if>
+			<if test="phone!=null and phone!=''">
+				phone,
+			</if>
+			<if test="address!=null and address!=''">
+				address,
+			</if>
+			<if test="createTime!=null and createTime!=''">
+				create_time,
+			</if>
+			<if test="sex!=null and sex!=''">
+				sex,
+			</if>
+			<if test="birthDate!=null and birthDate!=''">
+				birth_date,
+			</if>
+			<if test="nickname!=null and nickname!=''">
+				nickname,
+			</if>
+			<if test="openid!=null and openid!=''">
+				openid,
+			</if>
+			<if test="token!=null and token!=''">
+				token
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="name!=null and name!=''">
+				#{name},
+			</if>
+			<if test="phone!=null and phone!=''">
+				#{phone},
+			</if>
+			<if test="address!=null and address!=''">
+				#{address},
+			</if>
+			<if test="createTime!=null and createTime!=''">
+				#{createTime},
+			</if>
+			<if test="sex!=null and sex!=''">
+				#{sex},
+			</if>
+			<if test="birthDate!=null and birthDate!=''">
+				#{birthDate},
+			</if>
+			<if test="nickname!=null and nickname!=''">
+				#{nickname},
+			</if>
+			<if test="openid!=null and openid!=''">
+				#{openid},
+			</if>
+			<if test="token!=null and token!=''">
+				token
+			</if>
+		</trim>
+	</insert>
+	
+	<update id="updateData">
+		UPDATE ht_user
+		<set>
+			<if test="name!=null and name!=''">
+				name=#{name},
+			</if>
+			<if test="phone!=null and phone!=''">
+				phone=#{phone},
+			</if>
+			<if test="address!=null and address!=''">
+				address=#{address},
+			</if>
+			<if test="updateTime!=null and updateTime!=''">
+				update_time=#{updateTime},
+			</if>
+			<if test="sex!=null and sex!=''">
+				sex=#{sex},
+			</if>
+			<if test="birthDate!=null and birthDate!=''">
+				birth_date=#{birthDate},
+			</if>
+			<if test="isDel!=null and isDel!=''">
+				is_del=#{isDel},
+			</if>
+			<if test="isUse!=null and isUse!=''">
+				is_use=#{isUse},
+			</if>
+			<if test="nickname!=null and nickname!=''">
+				nickname=#{nickname},
+			</if>
+			<if test="token!=null and token!=''">
+				token=#{token}
+			</if>
+		</set>
+		<where>
+			<if test="id!=null and id!=''">
+				id=#{id}
+			</if>
+			<if test="openid!=null and openid!=''">
+				AND openid=#{openid}
+			</if>
+		</where>
+	</update>
+	<select id="getByOpenid" resultType="com.wuguan.huate.bean.entity.User">
+		SELECT id,`name`,phone,address,create_time createTime,update_time updateTime,sex,birth_date birthDate,nickname,openid,is_use isUse,token
+		FROM ht_user WHERE openid=#{openid}
+	</select>
+	<select id="detail" resultType="com.wuguan.huate.bean.entity.User">
+		SELECT id,`name`,phone,address,create_time createTime,update_time updateTime,sex,birth_date birthDate,nickname,openid,is_use isUse,token
+		FROM ht_user WHERE id=#{id}
+	</select>
+	<select id="getUsersByContent" resultType="com.wuguan.huate.bean.entity.User">
+		SELECT id,`name`,phone,address,create_time createTime,update_time updateTime,sex,birth_date birthDate,nickname,openid,is_use isUse,token FROM ht_user
+		<where>
+			 is_del=2
+			<if test="content!=null and content!=''">
+				AND phone=#{content}
+			</if>
+			ORDER BY create_time DESC
+		</where>
+	</select>
+	<select id="getListUser" resultType="com.wuguan.huate.bean.entity.User">
+		SELECT id,`name`,phone,address,create_time createTime,update_time updateTime,sex,birth_date birthDate,nickname,openid,is_use isUse,token
+		FROM ht_user
+		ORDER BY create_time DESC
+	</select>
+	<select id="getUserByOrderNo" resultType="com.wuguan.huate.bean.entity.User">
+		SELECT u.id,u.`name`,u.phone,u.address,u.create_time createTime,u.update_time updateTime,u.sex,u.birth_date birthDate,u.nickname,u.openid,u.is_use isUse,u.token FROM ht_user u
+		LEFT JOIN ht_order o ON u.id=o.user_id
+		WHERE o.order_no=#{orderNo}
+	</select>
+</mapper>
