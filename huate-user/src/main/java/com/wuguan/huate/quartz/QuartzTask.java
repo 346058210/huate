@@ -64,20 +64,20 @@ public class QuartzTask extends BaseService{
 	* @Title: createRandom
 	* @Description: 检查到期物业，通知缴费
 	 */
-	@Scheduled(cron ="0 0 18 * * ?")
-	public void checkExpireHouse() {
-		sendMessageService.propertyPayFeeMessageSend();
-	}
+	//@Scheduled(cron ="0 0 18 * * ?")
+	//public void checkExpireHouse() {
+	//	sendMessageService.propertyPayFeeMessageSend();
+	//}
 	
 	/**
 	 * 
 	* @Title: createRandom
 	* @Description: 检查到期车位，通知缴费
 	 */
-	@Scheduled(cron ="0 0 18 * * ?")
-	public void checkExpirePark() {
-		sendMessageService.ParkPayFeeMessageSend();
-	}
+	//@Scheduled(cron ="0 0 18 * * ?")
+	//public void checkExpirePark() {
+	//	sendMessageService.ParkPayFeeMessageSend();
+	//}
 	
 	/**
 	 * 
