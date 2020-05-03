@@ -34,28 +34,28 @@ public class HouseConsumeParam implements Serializable {
 	@ImportField(required = true)
 	private String houseNo;                        //戶號
 	@ExportField(columnName = "数据上传时间")
-	@ImportField(required = true)
 	private String uploadTime;                     //數據上傳時間
 	@ExportField(columnName = "是否支付（是|否）")
-	@ImportField()
 	private String pay;                         //是否支付 1 是 0 否
 	@ExportField(columnName = "支付时间")
-	@ImportField()
 	private String payTime;                        //支付時間
 	@ExportField(columnName = "消耗类型（水|电）")
 	@ImportField(required = true)
-	private String type;                     //上传数据类型 1 水 2 电
-	@ExportField(columnName = "月份（格式：2020-01）")
+	private String type;                     //上传数据类型 3 水 4 电
+	@ExportField(columnName = "月份")
 	@ImportField(required = true)
 	private String month;                         //月份
 	@ExportField(columnName = "金额")
-	@ImportField()
 	private Double money;                          //金額
 	@ExportField(columnName = "用量")
-	@ImportField(required = true)
 	private Double dosage;                         //用量
 	@ExportField(columnName = "收费说明")
-	@ImportField()
 	private String explain;                        //收費說明
+	@ExportField(columnName = "起始量")
+	@ImportField(required = true)
+	private Double startQuan;                        //收費說明
+	@ExportField(columnName = "结束量")
+	@ImportField(required = true)
+	private Double endQuan;                        //收費說明
 
 }

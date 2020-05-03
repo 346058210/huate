@@ -14,6 +14,7 @@ import com.wuguan.huate.bean.entity.House;
 import com.wuguan.huate.bean.params.HousePageParam;
 import com.wuguan.huate.bean.vo.HouseM;
 import com.wuguan.huate.bean.vo.HouseVo;
+import com.wuguan.huate.bean.vo.UserHouseVo;
 import com.wuguan.huate.comm.CustomException;
 import com.wuguan.huate.comm.PageInfo;
 
@@ -176,4 +177,26 @@ public interface HouseService {
 	* @return
 	*/
 	Object queryShop(String name);
+
+	/**
+	* @Title: queryBindUser
+	* @Description: 关联用户
+	* @param list
+	* @return
+	*/
+	List<UserHouseVo> queryBindUser(List<String> list);
+
+	/**
+	* @Title: getdueTimeHouses
+	* @Description: TODO(这里用一句话描述这个方法的作用)
+	* @return
+	*/
+	List<House> getdueTimeHouses();
+
+	/**
+	* @Title: queryShops
+	* @Description: TODO(这里用一句话描述这个方法的作用)
+	* @return
+	*/
+	List<House> queryShops();
 }

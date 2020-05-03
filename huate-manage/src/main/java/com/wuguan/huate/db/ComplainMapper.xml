@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuguan.huate.db.ComplainMapper">
+	<select id="pageData" resultType="com.wuguan.huate.bean.vo.ComplainVo">
+		SELECT
+			c.id,c.upload_path uploadPath,c.`desc`,c.create_time createTime,c.complain_id complainId,u.`name` complain,u.phone complainPhone,
+			c.state,c.`handler`,c.handler_id handlerId,c.handle_phone handlePhone,c.handle_time handleTime,c.receipt,c.handle_path handlePath,c.is_del isDel,c.audit,c.audit_phone auditPhone,c.audit_id auditId
+		FROM ht_complain c
+		LEFT JOIN ht_user u ON c.complain_id = u.id
+		<where>
+			1=1
+			AND c.is_del=0
+			<!-- <if test="workerId!=null and workerId!=''">
+				AND (c.handler_id=#{workerId} OR c.audit_id=#{workerId})
+			</if> -->
+			<if test="param.state!=null and param.state!=''">
+				AND	c.state=#{param.state}
+			</if>
+			ORDER BY c.create_time DESC
+		</where>
+	</select>
+	<select id="detailData" resultType="com.wuguan.huate.bean.vo.ComplainVo">
+		SELECT
+			c.id,c.upload_path uploadPath,c.`desc`,c.create_time createTime,c.complain_id complainId,u.`name` complain,u.phone complainPhone,
+			c.state,c.`handler`,c.handler_id handlerId,c.handle_phone handlePhone,c.handle_time handleTime,c.receipt,c.handle_path handlePath,c.is_del isDel,c.audit,c.audit_phone auditPhone,c.audit_id auditId
+		FROM ht_complain c
+		LEFT JOIN ht_user u ON c.complain_id = u.id 
+		WHERE c.id =#{id} AND c.is_del=0
+	</select>
+	<update id="allotHandle">
+		UPDATE ht_complain
+		<set>
+			<if test="uploadPath!=null and uploadPath!=''">
+				upload_path=#{uploadPath},
+			</if>
+			<if test="desc!=null and desc!=''">
+				`desc`=#{desc},
+			</if>
+			<if test="createTime!=null and createTime!=''">
+				create_time=#{createTime},
+			</if>
+			<if test="complainId!=null and complainId!=''">
+				complain_id=#{complainId},
+			</if>
+			<if test="state!=null and state!=''">
+				state=#{state},
+			</if>
+			<if test="handlerId!=null and handlerId!=''">
+				handler_id=#{handlerId},
+			</if>
+			<if test="handler!=null and handler!=''">
+				handler=#{handler},
+			</if>
+			<if test="handlePhone!=null and handlePhone!=''">
+				handle_phone=#{handlePhone},
+			</if>
+			<if test="handleTime!=null and handleTime!=''">
+				handle_time=#{handleTime},
+			</if>
+			<if test="receipt!=null and receipt!=''">
+				receipt=#{receipt},
+			</if>
+			<if test="handlePath!=null and handlePath!=''">
+				handle_path=#{handlePath},
+			</if>
+			<if test="isDel!=null and isDel!=''">
+				is_del=#{isDel},
+			</if>
+			<if test="audit!=null and audit!=''">
+				audit=#{audit},
+			</if>
+			<if test="auditPhone!=null and auditPhone!=''">
+				audit_phone=#{auditPhone},
+			</if>
+			<if test="auditId!=null and auditId!=''">
+				audit_id=#{auditId}
+			</if>
+		</set>
+		WHERE id=#{id}
+	</update>
+</mapper>

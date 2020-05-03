@@ -35,7 +35,7 @@ public class ResourceController {
 	ResourcesService resourcesService;
 	@Autowired
 	RoleResService roleResService;
-
+	
 	@Function(key = "resourceListResources")
 	@RequestMapping(value = "/resource/listResources", method = RequestMethod.GET)
 	public ApiResult listResources() throws CustomException {
@@ -56,8 +56,7 @@ public class ResourceController {
 	}
 
 	@Function(key = "resourceRoleResource")
-	@ParamsValidate(validateParams = { @Param(key = "roleId", limit = "0,11", type = ParamType.NUMBER),
-			@Param(key = "resIds", type = ParamType.CUSTOM) })
+	@ParamsValidate(validateParams = { @Param(key = "roleId", limit = "0,11", type = ParamType.NUMBER)})
 	@RequestMapping(value = "/resource/roleResource", method = RequestMethod.POST)
 	public ApiResult roleResource(Integer roleId, String resIds) throws CustomException {
 		roleResService.addBatch(roleId, resIds);

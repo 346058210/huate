@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuguan.huate.db.VisitorMapper">
+	<insert id="addData" keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_visitor 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="name!=null and name!=''">
+				`name`,
+			</if>
+			<if test="phone!=null and phone!=''">
+				phone,
+			</if>
+			<if test="houseNo!=null and houseNo!=''">
+				house_no,
+			</if>
+			<if test="applyUserId!=null and applyUserId!=''">
+				apply_user_id,
+			</if>
+			<if test="applyUserPhone!=null and applyUserPhone!=''">
+				apply_user_phone,
+			</if>
+			<if test="applyUserName!=null and applyUserName!=''">
+				apply_user_name,
+			</if>
+			<if test="code!=null and code!=''">
+				`code`,
+			</if>
+			<if test="accessTime!=null and accessTime!=''">
+				access_time,
+			</if>
+			<if test="createTime!=null and createTime!=''">
+				create_time,
+			</if>
+			<if test="num!=null and num!=''">
+				num,
+			</if>
+			<if test="carNo!=null and carNo!=''">
+				car_no,
+			</if>
+			<if test="affirmTime!=null and affirmTime!=''">
+				affirm_time
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="name!=null and name!=''">
+				#{name},
+			</if>
+			<if test="phone!=null and phone!=''">
+				#{phone},
+			</if>
+			<if test="houseNo!=null and houseNo!=''">
+				#{houseNo},
+			</if>
+			<if test="applyUserId!=null and applyUserId!=''">
+				#{applyUserId},
+			</if>
+			<if test="applyUserPhone!=null and applyUserPhone!=''">
+				#{applyUserPhone},
+			</if>
+			<if test="applyUserName!=null and applyUserName!=''">
+				#{applyUserName},
+			</if>
+			<if test="code!=null and code!=''">
+				#{code},
+			</if>
+			<if test="accessTime!=null and accessTime!=''">
+				#{accessTime},
+			</if>
+			<if test="createTime!=null and createTime!=''">
+				#{createTime},
+			</if>
+			<if test="num!=null and num!=''">
+				#{num},
+			</if>
+			<if test="carNo!=null and carNo!=''">
+				#{carNo},
+			</if>
+			<if test="affirmTime!=null and affirmTime!=''">
+				#{affirmTime}
+			</if>
+		</trim>
+	</insert>
+	<update id="updateData">
+		UPDATE ht_visitor
+		<set>
+			<if test="name!=null and name!=''">
+				`name`=#{name},
+			</if>
+			<if test="phone!=null and phone!=''">
+				phone=#{phone},
+			</if>
+			<if test="houseNo!=null and houseNo!=''">
+				house_no=#{houseNo},
+			</if>
+			<if test="accessTime!=null and accessTime!=''">
+				access_time=#{accessTime},
+			</if>
+			<if test="num!=null and num!=''">
+				num=#{num},
+			</if>
+			<if test="carNo!=null and carNo!=''">
+				car_no=#{carNo},
+			</if>
+			<if test="affirmTime!=null and affirmTime!=''">
+				affirm_time=#{affirmTime}
+			</if>
+		</set>
+		WHERE id=#{id}
+	</update>
+	<select id="detailData" resultType="com.wuguan.huate.bean.entity.Visitor">
+		SELECT
+			v.id,v.`name`,v.phone,v.house_no houseNo,v.apply_user_id applyUserId,v.apply_user_phone applyUserPhone,v.apply_user_name applyUserName,
+			v.`code`,v.access_time accessTime,v.create_time createTime,v.num,v.car_no carNo,v.affirm_time affirmTime
+		FROM ht_visitor v
+		WHERE v.id=#{id}
+	</select>
+	<select id="pageData" resultType="com.wuguan.huate.bean.entity.Visitor">
+		SELECT
+			v.id,v.`name`,v.phone,v.house_no houseNo,v.apply_user_id applyUserId,v.apply_user_phone applyUserPhone,v.apply_user_name applyUserName,
+			v.`code`,v.access_time accessTime,v.create_time createTime,v.num,v.car_no carNo,v.affirm_time affirmTime
+		FROM ht_visitor v
+		ORDER BY v.create_time DESC
+	</select>
+	<select id="isExist" resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM ht_visitor WHERE `code`=#{code}
+	</select>
+	<select id="queryByCode" resultType="com.wuguan.huate.bean.entity.Visitor">
+		SELECT
+			v.id,v.`name`,v.phone,v.house_no houseNo,v.apply_user_id applyUserId,v.apply_user_phone applyUserPhone,v.apply_user_name applyUserName,
+			v.`code`,v.access_time accessTime,v.create_time createTime,v.num,v.car_no carNo,v.affirm_time affirmTime
+		FROM ht_visitor v
+		WHERE v.`code`=#{code}
+	</select>
+	<update id="affirmVisitor">
+		UPDATE ht_visitor SET access_time=#{affirmTime} WHERE id=#{id}
+	</update>
+</mapper>

@@ -12,6 +12,7 @@ import java.util.List;
 
 import com.wuguan.huate.bean.entity.HouseConsume;
 import com.wuguan.huate.bean.params.HouseConsumePageParam;
+import com.wuguan.huate.comm.PageInfo;
 
 /** 
 * @ClassName: HouseConsumeService 
@@ -79,4 +80,25 @@ public interface HouseConsumeService {
 	* @param houseNo
 	*/
 	List<HouseConsume> getListDataUnPay(String houseNo);
+
+	/**
+	* @Title: waterEelecticFeeCount
+	* @Description: TODO(这里用一句话描述这个方法的作用)
+	* @return
+	*/
+	Object waterEelecticFeeCount();
+
+	/**
+	* @Title: pageData
+	* @Description: TODO(这里用一句话描述这个方法的作用)
+	* @param consumePageParam
+	* @return
+	*/
+	PageInfo<HouseConsume> pageData(HouseConsumePageParam consumePageParam);
+
+	/**
+	* @Title: querySameMonthData
+	* @Description: TODO(这里用一句话描述这个方法的作用)
+	*/
+	List<HouseConsume> querySameMonthData();
 }

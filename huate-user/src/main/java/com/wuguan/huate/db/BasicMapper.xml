@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuguan.huate.db.BasicMapper">
+	<resultMap type="com.wuguan.huate.bean.vo.BasicVo" id="BasicVo">
+		<id property="id" column="id"/>
+		<result property="company" column="company" />
+		<result property="workTime" column="workTime" />
+		<result property="phone" column="phone" />
+		<result property="address" column="address"/>
+		<result property="uploadPath" column="upload_path"/>
+		<result property="repairsTime" column="repairs_time"/>
+		<result property="visitorTime" column="visitor_time"/>
+		<collection property="Audits" ofType="com.wuguan.huate.bean.entity.Audit">
+			<id property="id" column="auditId"/>
+			<result property="workerId" column="workerId" />
+			<result property="createTime" column="createTime" />
+			<result property="path" column="path" />
+			<result property="name" column="name" />
+			<result property="phone" column="auditphone" />
+			<result property="directType" column="directType" />
+			<result property="basicId" column="basicId" />
+			<result property="company" column="company" />
+			<result property="remark" column="remark" />
+		</collection>
+	</resultMap>
+	<select id="queryBasic" resultMap="BasicVo">
+		SELECT 
+			b.id, b.company, b.work_time workTime, b.phone, b.address,a.id auditId,a.create_time createTime,b.repairs_time,b.visitor_time,
+			a.worker_id workerId,a.`name`,a.phone auditphone,a.path,a.direct_type directType,a.basic_id basicId,b.company,b.upload_path
+		FROM ht_basic b
+		LEFT JOIN ht_audit a ON a.basic_id=b.id
+		ORDER BY b.id DESC
+		#LIMIT 1
+	</select>
+</mapper>

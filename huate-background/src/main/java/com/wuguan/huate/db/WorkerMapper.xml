@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wuguan.huate.db.WorkerMapper">
-	<insert id="addData">
+	<insert id="addData" keyProperty="id" useGeneratedKeys="true">
 		INSERT INTO ht_worker
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<if test="name!=null and name!=''">
@@ -19,7 +19,7 @@
 			<if test="sex!=null and sex!=''">
 				sex,
 			</if>
-			<if test="birthDate！=null and birthDate!=''">
+			<if test="birthDate!=null and birthDate!=''">
 				birth_date,
 			</if>
 			<if test="nickname!=null and nickname!=''">
@@ -29,10 +29,7 @@
 				openid,
 			</if>
 			<if test="password!=null and password!=''">
-				`password`,
-			</if>
-			<if test="job!=null and job!=''">
-				job
+				`password`
 			</if>
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -51,7 +48,7 @@
 			<if test="sex!=null and sex!=''">
 				#{sex},
 			</if>
-			<if test="birthDate！=null and birthDate!=''">
+			<if test="birthDate!=null and birthDate!=''">
 				#{birthDate},
 			</if>
 			<if test="nickname!=null and nickname!=''">
@@ -61,10 +58,7 @@
 				#{openid},
 			</if>
 			<if test="password!=null and password!=''">
-				#{password},
-			</if>
-			<if test="job!=null and job!=''">
-				#{job}
+				#{password}
 			</if>
 		</trim>
 	</insert>
@@ -86,7 +80,7 @@
 			<if test="sex!=null and sex!=''">
 				sex=#{sex},
 			</if>
-			<if test="birthDate！=null and birthDate!=''">
+			<if test="birthDate!=null and birthDate!=''">
 				birth_date=#{birthDate},
 			</if>
 			<if test="nickname!=null and nickname!=''">
@@ -98,16 +92,13 @@
 			<if test="password!=null and password!=''">
 				`password`=#{password},
 			</if>
-			<if test="job!=null and job!=''">
-				job=#{job},
-			</if>
 			<if test="updateTime!=null and updateTime!=''">
 				update_time=#{updateTime},
 			</if>
-			<if test="isDel!=null and isDel!=''">
+			<if test="isDel!=null">
 				is_del=#{isDel},
 			</if>
-			<if test="isUse!=null and isUse!=''">
+			<if test="isUse!=null">
 				is_use=#{isUse},
 			</if>
 			<if test="tokenPc!=null and tokenPc!=''">
@@ -128,7 +119,7 @@
 	</update>
 
 	<select id="isExist" resultType="java.lang.Integer">
-		SELECT 1 FROM ht_worker
+		SELECT COUNT(1) FROM ht_worker
 		<where>
 			1=1
 			<if test="phone!=null and phone!=''">
@@ -141,29 +132,41 @@
 	</select>
 	<select id="detailData" resultType="com.wuguan.huate.bean.entity.Worker">
 		SELECT 
-			id,`name`,phone,create_time createTime,update_time updateTime,
-			sex,birth_date birthDate,nickname,openid,`password`,job,is_use isUse 
-		FROM ht_worker WHERE id=#{id}
+			w.id,w.`name`,w.phone,w.create_time createTime,w.update_time updateTime,
+			w.sex,w.birth_date birthDate,w.nickname,w.openid,w.`password`,w.is_use isUse,wr.role_id roleId
+		FROM ht_worker w
+		LEFT JOIN ht_worker_role wr ON w.id=wr.worker_id WHERE w.id=#{id}
 	</select>
 	<select id="pageData" resultType="com.wuguan.huate.bean.entity.Worker">
 		SELECT 
-			id,`name`,phone,create_time createTime,update_time updateTime,
-			sex,birth_date birthDate,nickname,openid,`password`,job,is_use isUse 
-		FROM ht_worker
+			w.id,w.`name`,w.phone,w.create_time createTime,w.update_time updateTime,
+			w.sex,w.birth_date birthDate,w.nickname,w.openid,w.`password`,w.is_use isUse,wr.role_id roleId
+		FROM ht_worker w
+		LEFT JOIN ht_worker_role wr ON w.id=wr.worker_id
 		<where>
-			is_del=2
+			is_del=0
 			<if test="content!=null and content!=''">
 				AND CONCAT_WS(',',`name`,nickname,phone) LIKE CONCAT('%',#{content},'%')
 			</if>
-			<if test="job!=null and job!=''">
-				AND job=#{job}
+			<if test="roleId!=null and roleId!=''">
+				AND wr.role_id=#{roleId}
 			</if>
+			ORDER BY w.create_time DESC
 		</where>
 	</select>
 	<select id="getWorkerByPhone" resultType="com.wuguan.huate.bean.entity.Worker">
 		SELECT 
-			id,`name`,phone,create_time createTime,update_time updateTime,
-			sex,birth_date birthDate,nickname,openid,`password`,job,is_use isUse 
-		FROM ht_worker WHERE phone=#{phone} AND is_del=2
+			w.id,w.`name`,w.phone,w.create_time createTime,w.update_time updateTime,
+			w.sex,w.birth_date birthDate,w.nickname,w.openid,w.`password`,w.is_use isUse,wr.role_id roleId
+		FROM ht_worker w
+		LEFT JOIN ht_worker_role wr ON w.id=wr.worker_id WHERE w.phone=#{phone} AND is_del=0
+	</select>
+	<select id="queryWorkersByRoleId" resultType="com.wuguan.huate.bean.entity.Worker">
+		SELECT
+			w.id,w.`name`,w.phone,w.address,w.is_del isDel,w.create_time createTime,w.update_time updateTime,
+			w.sex,w.birth_date birthDate,w.nickname,w.openid,w.`password`,w.is_use isUse,w.token_pc tokenPc,w.token_mobile tokenMobile
+		FROM ht_worker_role wr
+		LEFT JOIN ht_worker w ON wr.worker_id=w.id
+		WHERE wr.role_id=#{roleId} AND w.is_del=0
 	</select>
 </mapper>

@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.wuguan.huate.bean.entity.Order;
 import com.wuguan.huate.bean.params.OrderPageParam;
 import com.wuguan.huate.bean.params.PayRecordPageParam;
+import com.wuguan.huate.bean.vo.OrderItemExcel;
 import com.wuguan.huate.bean.vo.OrderRecord;
 import com.wuguan.huate.bean.vo.OrderVo;
 import com.wuguan.huate.comm.CustomException;
@@ -90,7 +91,7 @@ public interface OrderService {
 	* @param param
 	* @return
 	*/
-	List<Order> getOrders(OrderPageParam param);
+	List<OrderItemExcel> getOrders(OrderPageParam param);
 
 	/**
 	* @Title: payRecords
@@ -131,5 +132,13 @@ public interface OrderService {
 	* @return
 	*/
 	Object pageDataByUser(OrderPageParam param);
+
+	/**
+	* @Title: verifyOrder
+	* @Description: TODO(这里用一句话描述这个方法的作用)
+	* @param id
+	* @param checking
+	*/
+	void verifyOrder(Integer id, Integer checking);
 
 }

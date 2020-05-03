@@ -41,6 +41,9 @@ public class PermissionsValidateInterceptor implements HandlerInterceptor {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 		environment = SpringUtil.getBean(Environment.class);
+		if (environment.getProperty("dev_model").equals("dev")) {
+			return true;
+		}
 		if (request.getHeader("source").equals("mobile"))
 			return true;
 		// 开发模式放行

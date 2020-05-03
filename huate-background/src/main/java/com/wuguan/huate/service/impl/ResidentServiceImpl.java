@@ -64,7 +64,7 @@ public class ResidentServiceImpl implements ResidentService {
 	@Override
 	public Boolean isExist(String idcard, Integer id) throws CustomException {
 		Integer exist = residentMapper.isExist(idcard, id);
-		if (exist!=null) {
+		if (exist!=0) {
 			return true;
 		}
 		return false;

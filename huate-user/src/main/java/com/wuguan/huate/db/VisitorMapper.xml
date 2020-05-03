@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuguan.huate.db.VisitorMapper">
+
+	<insert id="addData" keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_visitor
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="applyUserId!=null and applyUserId!=''">
+				apply_user_id,
+			</if>
+			<if test="applyUserPhone!=null and applyUserPhone!=''">
+				apply_user_phone,
+			</if>
+			<if test="applyUserName!=null and applyUserName!=''">
+				apply_user_name,
+			</if>
+			<if test="name!=null and name!=''">
+				`name`,
+			</if>
+			<if test="phone!=null and phone!=''">
+				phone,
+			</if>
+			<if test="houseNo!=null and houseNo!=''">
+				house_no,
+			</if>
+			<if test="code!=null and code!=''">
+				`code`,
+			</if>
+			<if test="accessTime!=null and accessTime!=''">
+				access_time,
+			</if>
+			<if test="createTime!=null and createTime!=''">
+				create_time,
+			</if>
+			<if test="num!=null and num!=''">
+				num,
+			</if>
+			<if test="carNo!=null and carNo!=''">
+				car_no
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="applyUserId!=null and applyUserId!=''">
+				#{applyUserId},
+			</if>
+			<if test="applyUserPhone!=null and applyUserPhone!=''">
+				#{applyUserPhone},
+			</if>
+			<if test="applyUserName!=null and applyUserName!=''">
+				#{applyUserName},
+			</if>
+			<if test="name!=null and name!=''">
+				#{name},
+			</if>
+			<if test="phone!=null and phone!=''">
+				#{phone},
+			</if>
+			<if test="houseNo!=null and houseNo!=''">
+				#{houseNo},
+			</if>
+			<if test="code!=null and code!=''">
+				#{code},
+			</if>
+			<if test="accessTime!=null and accessTime!=''">
+				#{accessTime},
+			</if>
+			<if test="createTime!=null and createTime!=''">
+				#{createTime},
+			</if>
+			<if test="num!=null and num!=''">
+				#{num},
+			</if>
+			<if test="carNo!=null and carNo!=''">
+				#{carNo}
+			</if>
+		</trim>
+	</insert>
+	<select id="detailData" resultType="com.wuguan.huate.bean.vo.VisitorVo">
+		SELECT
+			v.id,v.`name`,v.phone,v.house_no houseNo,v.apply_user_id applyUserId,u.nickname,v.apply_user_phone applyUserPhone,v.apply_user_name applyUserName,
+			v.`code`,v.access_time accessTime,v.create_time createTime,v.num,v.car_no carNo,v.affirm_time affirmTime
+		FROM ht_visitor v
+		LEFT JOIN ht_user u ON v.apply_user_id=u.id
+		WHERE v.id=#{id}
+	</select>
+	<select id="pageData" resultType="com.wuguan.huate.bean.vo.VisitorVo">
+		SELECT
+			v.id,v.`name`,v.phone,v.house_no houseNo,v.apply_user_id applyUserId,u.nickname,v.apply_user_phone applyUserPhone,v.apply_user_name applyUserName,
+			v.`code`,v.access_time accessTime,v.create_time createTime,v.num,v.car_no carNo,v.affirm_time affirmTime
+		FROM ht_visitor v
+		LEFT JOIN ht_user u ON v.apply_user_id=u.id
+		<where>
+			1=1
+			<if test="userId!=null and userId!=''">
+				AND v.apply_user_id=#{userId}
+			</if>
+		</where>
+		ORDER BY v.create_time DESC
+	</select>
+</mapper>

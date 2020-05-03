@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuguan.huate.db.AdvertisingMapper">
+	<select id="queryAdvertisings" resultType="com.wuguan.huate.bean.entity.Advertising">
+		SELECT 
+			id,title,path,create_time createTime,is_del isDel,is_pub isPub,sequence,url,url_type urlType,other_app_id otherAppId
+		FROM ht_advertising WHERE is_pub=1 AND is_del=0
+		ORDER BY sequence ASC
+	</select>
+</mapper>

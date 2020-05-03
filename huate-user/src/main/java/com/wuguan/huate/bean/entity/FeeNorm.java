@@ -36,6 +36,6 @@ public class FeeNorm implements Serializable{
 	private Integer cycle;                            //生成周期
 	private Integer weight;                           //权重
 	private Integer mtc;                      //1固定收费；2:按量收费
-	private Integer remark;                      //類型ID
+	private String remark;                      //類型ID
 
 }

@@ -34,9 +34,8 @@ public class Resources implements Serializable{
 	private String resKey;                          //資源key
 	private Integer isUse;                          //啟用禁用 1 啟用 0 禁用
 	private Integer weight;                         //權重
-	@Override
-	public String toString() {
-		return "Resources [id=" + id + ", resName=" + resName + ", resType=" + resType + ", resPath=" + resPath
-				+ ", pid=" + pid + ", resKey=" + resKey + ", isUse=" + isUse + ", weight=" + weight + "]";
-	}
+	private String icon;                         
+	private String redirect;                        
+	private String component;                         
+
 }

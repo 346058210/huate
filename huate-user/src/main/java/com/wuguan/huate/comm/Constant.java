@@ -36,13 +36,27 @@ public class Constant {
 	public static final String SIGN_TYPE="MD5";
 	//获取凭证Type
 	public static final String AUTH_GRANT_TYPE="client_credential";
-	//---------------------消息模板ID----------------------------------
+	//---------------------享家-消息模板ID----------------------------------
 	//缴费成功通知模板
 	public static final String PAY_TEMPLATEID="wXpIF4xoCJj2yE7wKMJfB1QCaJ-fIMjDFSS6INFUZzI";
 	//物业缴费通知模板
 	public static final String PROPERTY_PAY_TEMPLATEID="z4hddVfE9WTVfH903gmtH-JlaSktny1ugDeCzz5mXdk";
 	//物业公告通知
 	public static final String NOTICE_TEMPLATEID="sxDLTMu5KyRxT6mBQyrSuT_8aYunxDzcExdhnG-OtdU";
+	//投诉建议反馈通知
+	public static final String COMPAIN_RESULT="6Iju7sMR1jY7lmffn9HI_4C4ShDwMqrCW9iqM7NmFGw";
+	//报修反馈结果
+	public static final String XJ_REPAIRDS_RESULT="Eeap3Kg-D_5fkreGQIklkkJ2hTOYTcIA0eKyygOwj5Q";
+	//客户预定提醒
+	public static final String RESERVE_TX="74XHd9oiKyG1bmLTiI8_D4DgMIrers6fmTF-VvmRmpE";
+	//---------------------家园—消息模板ID----------------------------------
+	//预约结果通知								   
+	public static final String APPOINT_RESULT="vIl5PqfDy0cF_BJYGcMFAJPfZUjWjQLG5slYwSzBIzs";
+	//报修提醒
+	public static final String REPAIRDS="kPj4Oheetbj4n6gmHrr1_w6SGVf1rs9dKXdeYyMONkE";
+	//投诉建议受理通知
+	public static final String COMPAIN="Oh1tKMojE6nGm1R73yPe9i5vJuVAvHyGs0mQ_-teRWM";
+
 	//---------------------消息模板ID----------------------------------
 	//获取session_key、openid,微信后台验证
 	public static final String CODE2SESSION = "https://api.weixin.qq.com/sns/jscode2session";

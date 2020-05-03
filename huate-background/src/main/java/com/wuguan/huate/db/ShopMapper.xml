@@ -4,12 +4,59 @@
 	<select id="getShopsByHouseId" resultType="com.wuguan.huate.bean.entity.Shop">
 		SELECT id,shop_no shopNo,shop_area shopArea,house_id houseId FROM ht_shop WHERE house_id=#{houseId} AND is_del=0
 	</select>
-	<insert id="addBatch">
+	<select id="queryAllStore" resultType="com.wuguan.huate.bean.entity.Shop">
+		SELECT id,shop_no shopNo,shop_area shopArea FROM ht_shop 
+		WHERE is_del=0
+		<if test="shopNo!=null and shopNo!=''">
+			AND shop_no LIKE CONCAT('%',#{shopNo},'%')
+		</if>
+	</select>
+	<select id="pageStore" resultType="com.wuguan.huate.bean.entity.Shop">
+		SELECT id,shop_no shopNo,shop_area shopArea FROM ht_shop WHERE is_del=0
+	</select>
+	<select id="detailStore" resultType="com.wuguan.huate.bean.entity.Shop">
+		SELECT id,shop_no shopNo,shop_area shopArea FROM ht_shop WHERE id=#{id}
+	</select>
+	<insert id="addBatch" keyProperty="id" useGeneratedKeys="true">
 		INSERT INTO ht_shop (shop_no,shop_area,house_id) VALUES
 		<foreach collection="shops" item="shop" index="index" separator=",">
 			(#{shop.shopNo},#{shop.shopArea},#{shop.houseId})
 		</foreach>	
 	</insert>
+	<insert id="addStore" keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_shop (shop_no,shop_area) VALUES (#{shopNo},#{shopArea})
+	</insert>
+	<update id="updateStore">
+		UPDATE ht_shop
+		<set>
+			<if test="shopNo!=null and shopNo!=''">
+				shop_no=#{shopNo},
+			</if>
+			<if test="shopArea!=null and shopArea!=''">
+				shop_area=#{shopArea},
+			</if>
+			<if test="houseId!=null and houseId!=''">
+				house_id=#{houseId},
+			</if>
+			<if test="isDel!=null and isDel!=''">
+				is_del=#{isDel}
+			</if>
+		</set>
+		WHERE id=#{id}
+	</update>
+	<update id="updateBatch">
+		UPDATE ht_shop SET house_id=#{houseId} WHERE id in
+		<foreach collection="shopIds" index="index" item="item"
+			separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</update>
+	<select id="queryIdsByHouseId" resultType="java.lang.Integer">
+		SELECT id FROM ht_shop WHERE house_id=#{houseId} AND is_del=0
+	</select>
+	<update id="unBind">
+		UPDATE ht_shop SET house_id=NULL WHERE house_id=#{houseId}
+	</update>
 	<select id="getListShop" resultType="com.wuguan.huate.bean.vo.ShopVo">
 		SELECT
 			p.id,p.shop_no shopNo,p.shop_area shopArea,h.`owner` shopName,h.address,h.sale,h.water_type_id waterTypeId,
@@ -17,5 +64,17 @@
 			h.due_time dueTime,h.remark_name remarkName
 		FROM ht_shop p
 		LEFT JOIN ht_house h ON p.house_id=h.id
+	</select>
+	<select id="isExist" resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM ht_shop
+		<where>
+			1=1
+			<if test="shopNo!=null and shopNo!=''">
+				AND shop_no=#{shopNo}
+			</if>
+			<if test="id!=null and id!=''">
+				AND id!=#{id}
+			</if>
+		</where>
 	</select>
 </mapper>

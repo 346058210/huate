@@ -16,12 +16,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -32,11 +29,11 @@ import com.wuguan.huate.annotation.Function;
 import com.wuguan.huate.annotation.Param;
 import com.wuguan.huate.annotation.ParamType;
 import com.wuguan.huate.annotation.ParamsValidate;
-import com.wuguan.huate.bean.entity.Order;
 import com.wuguan.huate.bean.entity.User;
+import com.wuguan.huate.bean.enums.FeeNormEnums;
 import com.wuguan.huate.bean.params.OrderPageParam;
 import com.wuguan.huate.bean.params.PayRecordPageParam;
-import com.wuguan.huate.bean.vo.OrderExcel;
+import com.wuguan.huate.bean.vo.OrderItemExcel;
 import com.wuguan.huate.bean.vo.OrderVo;
 import com.wuguan.huate.comm.BaseService;
 import com.wuguan.huate.comm.Constant;
@@ -160,7 +157,8 @@ public class OrderController {
 					params.put("phrase4", phrase);
 					params.put("date3", date);
 					baseService.subscribeMessageSend(accessToken, user.getOpenid(),
-							"pages/order/details/details?id=" + orderNo, Constant.PAY_TEMPLATEID, params);
+							"pages/order/details/details?id=" + orderNo, Constant.PAY_TEMPLATEID, params,
+							Constant.XJ_APPID, Constant.XJ_SECRET);
 
 				} else {
 					orderService.closeOrder(orderNo, 0);
@@ -194,6 +192,23 @@ public class OrderController {
 	@RequestMapping(value = "/order/pageData", method = RequestMethod.GET)
 	public ApiResult pageData(OrderPageParam param) throws CustomException {
 		return ApiResult.success(orderService.pageData(param));
+	}
+
+	/**
+	 * 
+	 * @Title: verifyOrder
+	 * @Description: 核实订单
+	 * @param id
+	 * @param checking
+	 * @return
+	 */
+	@Function(key = "orderVerifyOrder")
+	@ParamsValidate(validateParams = { @Param(key = "checking", limit = "0,11", type = ParamType.NUMBER),
+			@Param(key = "id", limit = "0,11", type = ParamType.NUMBER) })
+	@RequestMapping(value = "/order/verifyOrder", method = RequestMethod.POST)
+	public ApiResult verifyOrder(Integer id, Integer checking) {
+		orderService.verifyOrder(id, checking);
+		return ApiResult.success();
 	}
 
 	/**
@@ -251,22 +266,21 @@ public class OrderController {
 	@Function(key = "orderExportExcel")
 	@RequestMapping(value = "/order/exportExcel", method = RequestMethod.GET)
 	public void exportExcel(HttpServletResponse response, OrderPageParam params) throws CustomException {
-		ExcelBoot.ExportBuilder(response, "订单表信息", OrderExcel.class).exportResponse(params,
-				new ExportFunction<OrderPageParam, Order>() {
+		ExcelBoot.ExportBuilder(response, "订单表信息", OrderItemExcel.class).exportMultiSheetResponse(params,
+				new ExportFunction<OrderPageParam, OrderItemExcel>() {
 
 					@Override
-					public List<Order> pageQuery(OrderPageParam param, int pageNum, int pageSize) {
+					public List<OrderItemExcel> pageQuery(OrderPageParam param, int pageNum, int pageSize) {
 						return orderService.getOrders(param);
 					}
 
 					@Override
-					public Object convert(Order order) {
-						OrderExcel excel = new OrderExcel();
-						BeanUtils.copyProperties(order, excel);
-						excel.setIsClose(order.getIsClose() == 1 ? "是" : "否");
-						excel.setState(order.getState() == 1 ? "成功" : "失败");
-						excel.setPhone(userService.detail(order.getUserId()).getPhone());
-						return excel;
+					public Object convert(OrderItemExcel order) {
+						order.setFeeType(
+								FeeNormEnums.FeeTypeEnum.getByValue(Integer.getInteger(order.getFeeType())).getName());
+						order.setFeeType(
+								FeeNormEnums.PayStateEnum.getByValue(Integer.getInteger(order.getState())).getName());
+						return order;
 					}
 				});
 	}
@@ -315,8 +329,7 @@ public class OrderController {
 	 * @throws CustomException
 	 */
 	@Function(key = "orderCarPayRecords")
-	@ParamsValidate(validateParams = { @Param(key = "houseNo", type = ParamType.CUSTOM),
-			@Param(key = "type", limit = "0,11", type = ParamType.NUMBER) })
+	@ParamsValidate(validateParams = { @Param(key = "type", limit = "0,11", type = ParamType.NUMBER) })
 	@RequestMapping(value = "/order/carPayRecords", method = RequestMethod.GET)
 	public ApiResult carPayRecords(PayRecordPageParam param) throws CustomException {
 		return ApiResult.success(orderService.carPayRecords(param));

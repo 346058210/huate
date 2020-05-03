@@ -13,4 +13,121 @@
 		SELECT id,`name`,num,money,relation_id relationId,user_id userId,due_time dueTime,`desc`,
 		order_no orderNo,fee_type_id feeTypeId FROM ht_order_item WHERE order_no=#{orderNo}
 	</select>
+	<select id="todayPropertyPayFee" resultType="java.lang.Double">
+		SELECT SUM(oi.money) FROM ht_order_item oi
+		LEFT JOIN ht_order o ON oi.order_no=o.order_no
+		WHERE fee_type_id=1 AND DATE_FORMAT(o.pay_time,'%Y-%m-%d')= DATE_FORMAT(NOW(),'%Y-%m-%d');
+	</select>
+	<select id="todayTotalPayFee" resultType="java.lang.Double">
+		SELECT SUM(oi.money) FROM ht_order_item oi
+		LEFT JOIN ht_order o ON oi.order_no=o.order_no
+		WHERE DATE_FORMAT(o.pay_time,'%Y-%m-%d')= DATE_FORMAT(NOW(),'%Y-%m-%d');
+	</select>
+	<select id="totadyPayFee" resultType="java.util.Map">
+		SELECT
+				IFNULL(SUM(CASE oi.fee_type_id WHEN 1 THEN oi.money ELSE 0.0 END),0) property,
+				IFNULL(SUM(CASE oi.fee_type_id WHEN 3 THEN oi.money ELSE 0.0 END),0) water,
+				IFNULL(SUM(CASE oi.fee_type_id WHEN 4 THEN oi.money ELSE 0.0 END),0) electric,
+				IFNULL(SUM(CASE oi.fee_type_id WHEN 5 THEN oi.money ELSE 0.0 END),0) rubbish,
+				IFNULL(SUM(CASE oi.fee_type_id WHEN 6 THEN oi.money ELSE 0.0 END),0) parkManage,
+				IFNULL(SUM(CASE oi.fee_type_id WHEN 7 THEN oi.money ELSE 0.0 END),0) parkRent,
+				IFNULL(SUM(oi.money),0) total
+		FROM ht_order_item oi
+		LEFT JOIN ht_order o ON oi.order_no=o.order_no
+		WHERE DATE_FORMAT(o.pay_time,'%Y-%m-%d')=DATE_FORMAT(NOW(),'%Y-%m-%d') and o.state=1
+	</select>
+	<select id="feeCountByType" resultType="java.util.Map">
+		SELECT
+				IFNULL(SUM(CASE oi.fee_type_id WHEN 1 THEN oi.money ELSE 0.0 END),0) property,
+				IFNULL(SUM(CASE oi.fee_type_id WHEN 3 THEN oi.money ELSE 0.0 END),0) water,
+				IFNULL(SUM(CASE oi.fee_type_id WHEN 4 THEN oi.money ELSE 0.0 END),0) electric,
+				IFNULL(SUM(CASE oi.fee_type_id WHEN 5 THEN oi.money ELSE 0.0 END),0) rubbish,
+				IFNULL(SUM(CASE oi.fee_type_id WHEN 6 THEN oi.money ELSE 0.0 END),0) parkManage,
+				IFNULL(SUM(CASE oi.fee_type_id WHEN 7 THEN oi.money ELSE 0.0 END),0) parkRent,
+				IFNULL(SUM(oi.money),0) total
+		FROM ht_order_item oi
+		LEFT JOIN ht_order o ON oi.order_no=o.order_no
+		WHERE o.state=1
+		<if test="startTime!=null and startTime!=''">
+			AND DATE_FORMAT(o.pay_time,'%Y-%m-%d')&gt;=#{startTime}
+		</if>
+		<if test="endTime!=null  and endTime!=''">
+			AND DATE_FORMAT(o.pay_time,'%Y-%m-%d')&lt;=#{endTime} 
+		</if>
+	</select>
+	<select id="parkPayFee" resultType="java.util.Map">
+			SELECT
+					IFNULL(SUM(CASE oi.fee_type_id WHEN 6 THEN oi.money ELSE 0.0 END),0) parkManage,
+					IFNULL(SUM(CASE oi.fee_type_id WHEN 7 THEN oi.money ELSE 0.0 END),0) parkRent,
+					tmp.`MONTH` `month`
+			FROM ht_order_item oi
+			LEFT JOIN ht_order o ON oi.order_no=o.order_no
+			RIGHT JOIN 
+					(	SELECT DATE_FORMAT(NOW()-INTERVAL 0 MONTH,'%Y.%m') MONTH
+						UNION ALL
+						SELECT DATE_FORMAT(NOW()-INTERVAL 1 MONTH,'%Y.%m') MONTH
+						UNION ALL
+						SELECT DATE_FORMAT(NOW()-INTERVAL 2 MONTH,'%Y.%m') MONTH
+						UNION ALL
+						SELECT DATE_FORMAT(NOW()-INTERVAL 3 MONTH,'%Y.%m') MONTH
+						UNION ALL
+						SELECT DATE_FORMAT(NOW()-INTERVAL 4 MONTH,'%Y.%m') MONTH
+						UNION ALL
+						SELECT DATE_FORMAT(NOW()-INTERVAL 5 MONTH,'%Y.%m') MONTH
+						UNION ALL
+						SELECT DATE_FORMAT(NOW()-INTERVAL 6 MONTH,'%Y.%m') MONTH
+						UNION ALL
+						SELECT DATE_FORMAT(NOW()-INTERVAL 7 MONTH,'%Y.%m') MONTH
+						UNION ALL
+						SELECT DATE_FORMAT(NOW()-INTERVAL 8 MONTH,'%Y.%m') MONTH
+						UNION ALL
+						SELECT DATE_FORMAT(NOW()-INTERVAL 9 MONTH,'%Y.%m') MONTH
+						UNION ALL
+						SELECT DATE_FORMAT(NOW()-INTERVAL 10 MONTH,'%Y.%m') MONTH
+						UNION ALL
+						SELECT DATE_FORMAT(NOW()-INTERVAL 11 MONTH,'%Y.%m') MONTH ) tmp ON DATE_FORMAT(o.pay_time,'%Y.%m')=tmp.MONTH
+			GROUP BY tmp.MONTH
+			ORDER BY tmp.MONTH ASC
+	</select>
+	<select id="propertyFeeCount" resultType="java.util.Map">
+		SELECT
+				IFNULL(SUM(CASE h.type WHEN 1 THEN oi.money ELSE 0.0 END),0) residence,
+				IFNULL(SUM(CASE h.type WHEN 2 THEN oi.money ELSE 0.0 END),0) apartment,
+				IFNULL(SUM(CASE h.type WHEN 3 THEN oi.money ELSE 0.0 END),0) shop
+		FROM ht_order_item oi
+		LEFT JOIN ht_order o ON oi.order_no=o.order_no
+		LEFT JOIN ht_house h ON oi.relation_id=h.id
+		WHERE o.state=1 AND oi.fee_type_id=1
+		<if test="startTime!=null and startTime!=''">
+			AND DATE_FORMAT(o.pay_time,'%Y-%m-%d')&gt;=#{startTime}
+		</if>
+		<if test="endTime!=null  and endTime!=''">
+			 AND DATE_FORMAT(o.pay_time,'%Y-%m-%d')&lt;=#{endTime} 
+		</if>
+		<if test="state!=null">
+			AND h.state=#{state}
+		</if>
+	</select>
+	<select id="parkFeeCount" resultType="java.util.Map">
+		SELECT
+			IFNULL(SUM(CASE p.genre WHEN 1 THEN oi.money ELSE 0.0 END),0) wx,
+			IFNULL(SUM(CASE p.genre WHEN 2 THEN oi.money ELSE 0.0 END),0) bz,
+			IFNULL(SUM(CASE p.genre WHEN 3 THEN oi.money ELSE 0.0 END),0) hf,
+			IFNULL(SUM(CASE p.genre WHEN 4 THEN oi.money ELSE 0.0 END),0) zmwxwx,
+			IFNULL((CASE p.genre WHEN 5 THEN oi.money ELSE 0.0 END),0) zmwxbz,
+			IFNULL(SUM(CASE p.genre WHEN 6 THEN oi.money ELSE 0.0 END),0) zmbzbz
+		FROM ht_order_item oi
+		LEFT JOIN ht_order o ON oi.order_no=o.order_no
+		LEFT JOIN ht_park p ON oi.relation_id=p.id
+		WHERE o.state=1 AND oi.fee_type_id IN (6,7)
+		<if test="startTime!=null and startTime!=''">
+			AND DATE_FORMAT(o.pay_time,'%Y-%m-%d')&gt;=#{startTime}
+		</if>
+		<if test="endTime!=null  and endTime!=''">
+			 AND DATE_FORMAT(o.pay_time,'%Y-%m-%d')&lt;=#{endTime} 
+		</if>
+		<if test="type!=null">
+			AND p.type=#{type}
+		</if>
+	</select>
 </mapper>

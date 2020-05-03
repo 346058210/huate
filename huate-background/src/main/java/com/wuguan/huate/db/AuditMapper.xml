@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuguan.huate.db.AuditMapper">
+	<insert id="addData" keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_audit
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="workerId!=null and workerId!=''">
+				worker_id,
+			</if>
+			<if test="createTime!=null and createTime!=''">
+				create_time,
+			</if>
+			<if test="path!=null and path!=''">
+				`path`,
+			</if>
+			<if test="name!=null and name!=''">
+				`name`,
+			</if>
+			<if test="phone!=null and phone!=''">
+				phone,
+			</if>
+			<if test="directType!=null and directType!=''">
+				direct_type,
+			</if>
+			<if test="basicId!=null and basicId!=''">
+				basic_id,
+			</if>
+			<if test="remark!=null and remark!=''">
+				remark
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="workerId!=null and workerId!=''">
+				#{workerId},
+			</if>
+			<if test="createTime!=null and createTime!=''">
+				#{createTime},
+			</if>
+			<if test="path!=null and path!=''">
+				#{path},
+			</if>
+			<if test="name!=null and name!=''">
+				#{name},
+			</if>
+			<if test="phone!=null and phone!=''">
+				#{phone},
+			</if>
+			<if test="directType!=null and directType!=''">
+				#{directType},
+			</if>
+			<if test="basicId!=null and basicId!=''">
+				#{basicId},
+			</if>
+			<if test="remark!=null and remark!=''">
+				#{remark}
+			</if>
+		</trim>
+	</insert>
+	<update id="updateData">
+		UPDATE ht_audit 
+		<set>
+			<if test="workerId!=null and workerId!=''">
+				worker_id=#{workerId},
+			</if>
+			<if test="path!=null">
+				`path`=#{path},
+			</if>
+			<if test="name!=null and name!=''">
+				`name`=#{name},
+			</if>
+			<if test="phone!=null and phone!=''">
+				phone=#{phone},
+			</if>
+			<if test="directType!=null and directType!=''">
+				direct_type=#{directType},
+			</if>
+			<if test="basicId!=null and basicId!=''">
+				basic_id=#{basicId},
+			</if>
+			<if test="remark!=null and remark!=''">
+				remark=#{remark}
+			</if>
+		</set>
+		WHERE id=#{id}
+	</update>
+	<delete id="delData">
+		DELETE FROM ht_audit WHERE id=#{id}
+	</delete>
+	<select id="isExist" resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM ht_audit
+		<where>
+			1=1
+			<if test="workerId!=null and workerId!=''">
+				AND worker_id=#{workerId}
+			</if>
+			<if test="id!=null and id!=''">
+				AND	id!=#{id}
+			</if>
+		</where>
+	</select>
+	<select id="isUse" resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM ht_repairs WHERE audit_id=1
+	</select>
+	<select id="detailData" resultType="com.wuguan.huate.bean.vo.AuditVo">
+		SELECT
+			a.id,a.create_time createTime,a.worker_id workerId,a.`name`,a.phone,a.path,
+			a.direct_type directType,a.basic_id basicId,b.company
+		FROM ht_audit a
+		LEFT JOIN ht_basic b ON a.basic_id=b.id
+		WHERE a.id=#{id}
+	</select>
+	<select id="queryListData" resultType="com.wuguan.huate.bean.vo.AuditVo">
+		SELECT
+			a.id,a.create_time createTime,a.worker_id workerId,a.`name`,a.phone,a.path,
+			a.direct_type directType,a.basic_id basicId,b.company
+		FROM ht_audit a
+		LEFT JOIN ht_basic b ON a.basic_id=b.id
+		<where>
+			1=1
+			<if test="content!=null and content!=''">
+				AND CONCAT_WS(',',a.`name`,a.phone) LIKE CONCAT('%',#{content},'%')
+			</if>
+			<if test="directType!=null and directType!=''">
+				AND a.direct_type=#{directType}
+			</if>
+		</where>
+		ORDER BY a.id DESC
+	</select>
+	<select id="getAudit" resultType="com.wuguan.huate.bean.entity.Audit">
+		SELECT 
+			id,worker_id workerId,create_time createTime,path,`name`,phone,direct_type directType,basic_id basicId,remark
+		FROM ht_audit WHERE direct_type=#{directType}
+		LIMIT 1
+	</select>
+</mapper>

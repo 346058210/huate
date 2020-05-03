@@ -14,8 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.wuguan.huate.bean.entity.HouseConsume;
 import com.wuguan.huate.bean.params.HouseConsumePageParam;
+import com.wuguan.huate.comm.PageInfo;
 import com.wuguan.huate.db.HouseConsumeMapper;
 import com.wuguan.huate.service.HouseConsumeService;
 
@@ -78,4 +81,21 @@ public class HouseConsumeServiceImpl implements HouseConsumeService {
 		return houseConsumeMapper.getListDataUnPay(houseNo);
 	}
 
+	@Override
+	public Object waterEelecticFeeCount() {
+		return houseConsumeMapper.waterEelecticFeeCount();
+	}
+
+	@Override
+	public PageInfo<HouseConsume> pageData(HouseConsumePageParam consumePageParam) {
+		PageHelper.startPage(consumePageParam.getPage(), consumePageParam.getRows());
+		Page<HouseConsume> page=houseConsumeMapper.pageData(consumePageParam);
+		return new PageInfo<HouseConsume>(page.getTotal(), page);
+	}
+
+	//当前月份数据
+	@Override
+	public List<HouseConsume> querySameMonthData() {
+		return houseConsumeMapper.querySameMonthData();
+	}
 }

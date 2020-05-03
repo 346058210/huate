@@ -39,4 +39,5 @@ public class WorkerVo implements Serializable {
 	private String nickname;                        //暱稱
 	private Integer job;                         //职业 1管理人员|2 维修工程师|3 保安
 	private Integer isUse;                         //1 启用 0 禁用
+	private String openid;                         //微信upenId
 }

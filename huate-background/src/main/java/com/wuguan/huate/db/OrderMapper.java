@@ -16,8 +16,8 @@ import com.github.pagehelper.Page;
 import com.wuguan.huate.bean.entity.Order;
 import com.wuguan.huate.bean.params.OrderPageParam;
 import com.wuguan.huate.bean.params.PayRecordPageParam;
+import com.wuguan.huate.bean.vo.OrderItemExcel;
 import com.wuguan.huate.bean.vo.OrderRecord;
-
 /**
  * @ClassName: OrderMapper
  * @Description: TODO(这里用一句话描述这个类的作用)
@@ -67,7 +67,7 @@ public interface OrderMapper {
 	* @param rows
 	* @return
 	*/
-	List<Order> getOrders(OrderPageParam param);
+	List<OrderItemExcel> getOrders(OrderPageParam param);
 
 	/**
 	* @Title: payRecords
@@ -109,5 +109,13 @@ public interface OrderMapper {
 	* @return
 	*/
 	Page<Order> pageDataByUser(@Param("param")OrderPageParam param, @Param("userId")Integer userId);
+
+	/**
+	* @Title: verifyOrder
+	* @Description: TODO(这里用一句话描述这个方法的作用)
+	* @param id
+	* @param checking
+	*/
+	void verifyOrder(@Param("id")Integer id, @Param("checking")Integer checking);
 
 }

@@ -9,7 +9,11 @@
 package com.wuguan.huate.service;
 
 import java.util.List;
+import java.util.Map;
+
 import com.wuguan.huate.bean.entity.OrderItem;
+import com.wuguan.huate.bean.params.ParkCountParam;
+import com.wuguan.huate.bean.params.PropertyParam;
 import com.wuguan.huate.comm.CustomException;
 
 /** 
@@ -30,5 +34,56 @@ public interface OrderItemService {
 	* @param orderNo
 	*/
 	List<OrderItem> getOrderItemByOrderNo(String orderNo);
+
+	/**
+	* @Title: todayPropertyPayFee
+	* @Description: TODO(这里用一句话描述这个方法的作用)
+	* @return
+	*/
+	Double todayPropertyPayFee();
+
+	/**
+	* @Title: todayTotalPayFee
+	* @Description: TODO(这里用一句话描述这个方法的作用)
+	* @return
+	*/
+	Double todayTotalPayFee();
+
+	/**
+	* @Title: totadyPayFee
+	* @Description: TODO(这里用一句话描述这个方法的作用)
+	* @return
+	*/
+	Object totadyPayFee();
+
+	/**
+	* @Title: parkPayFee
+	* @Description: 12个月车位费缴纳情况
+	* @return
+	*/
+	List<Map<String, Object>> parkPayFee();
+
+	/**
+	* @Title: feeCountByType
+	* @Description: TODO(这里用一句话描述这个方法的作用)
+	* @param startTime
+	* @param endTime
+	*/
+	Object feeCountByType(String startTime, String endTime);
+
+	/**
+	* @Title: propertyFeeCount
+	* @Description: TODO(这里用一句话描述这个方法的作用)
+	* @param param
+	*/
+	Object propertyFeeCount(PropertyParam param);
+
+	/**
+	* @Title: parkFeeCount
+	* @Description: TODO(这里用一句话描述这个方法的作用)
+	* @param param
+	* @return
+	*/
+	Object parkFeeCount(ParkCountParam param);
 
 }

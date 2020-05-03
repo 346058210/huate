@@ -15,6 +15,7 @@ import com.github.pagehelper.Page;
 import com.wuguan.huate.bean.entity.House;
 import com.wuguan.huate.bean.params.HousePageParam;
 import com.wuguan.huate.bean.vo.HouseM;
+import com.wuguan.huate.bean.vo.UserHouseVo;
 
 /**
  * @ClassName: HouseMapper
@@ -117,5 +118,27 @@ public interface HouseMapper {
 	* @return
 	*/
 	List<House> queryShop(@Param("name")String name);
+
+	/**
+	* @Title: queryBindUser
+	* @Description: TODO(这里用一句话描述这个方法的作用)
+	* @param list
+	* @return
+	*/
+	List<UserHouseVo> queryBindUser(@Param("houseNos")List<String> houseNos);
+
+	/**
+	* @Title: getdueTimeHouses
+	* @Description: TODO(这里用一句话描述这个方法的作用)
+	* @return
+	*/
+	List<House> getdueTimeHouses();
+
+	/**
+	* @Title: queryShops
+	* @Description: TODO(这里用一句话描述这个方法的作用)
+	* @return
+	*/
+	List<House> queryShops();
 
 }

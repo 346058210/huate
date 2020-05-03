@@ -33,7 +33,7 @@ public class ParkParam implements Serializable {
 	@ExportField(columnName = "ID")
 	private Integer id;
 	@ExportField(columnName = "房号")
-	@ImportField(required = true)
+	@ImportField()
 	private String houseNo;
 	@ExportField(columnName = "车牌号")
 	@ImportField()
@@ -42,34 +42,28 @@ public class ParkParam implements Serializable {
 	@ImportField(required = true)
 	private String parkNo;
 	@ExportField(columnName = "客户1")
-	@ImportField(required = true)
+	@ImportField()
 	private String ownerOne;
 	@ExportField(columnName = "客户2")
 	@ImportField()
 	private String ownerTwo;
-	@ExportField(columnName = "客户3")
-	@ImportField()
-	private String ownerThree;
 	@ExportField(columnName = "电话1")
 	@ImportField()
 	private String phoneOne;
 	@ExportField(columnName = "电话2")
 	@ImportField()
 	private String phoneTwo;
-	@ExportField(columnName = "电话3")
-	@ImportField()
-	private String phoneThree;
 	@ExportField(columnName = "类型")
 	@ImportField(required = true)
 	private String typeName;
 	@ExportField(columnName = "到期时间")
-	@ImportField(required = true)
+	@ImportField()
 	private String dueTime;
 	@ExportField(columnName = "收费标准（根据收费标准表匹配）")
 	@ImportField(required = true)
 	private String norm;
 	@ExportField(columnName = "面积")
-	@ImportField(required = true)
+	@ImportField()
 	private Double area;
 	@ExportField(columnName = "车位类型")
 	@ImportField()

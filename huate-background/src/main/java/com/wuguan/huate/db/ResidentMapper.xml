@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wuguan.huate.db.ResidentMapper">
-	<insert id="addBatch">
+	<insert id="addBatch" keyProperty="id" useGeneratedKeys="true">
 		INSERT INTO ht_resident (`name`,birth_date,sex,house_no,phone,movein_time,relation,idcard) VALUES
 		<foreach collection="residents" item="resident" index="index" separator=",">
 			(#{resident.name},#{resident.birthDate},#{resident.sex},#{resident.houseNo},#{resident.phone},#{resident.moveinTime},
 			#{resident.relation},#{resident.idcard})
 		</foreach>
 	</insert>
-	<insert id="addData">
+	<insert id="addData" keyProperty="id" useGeneratedKeys="true">
 		INSERT INTO ht_resident
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<if test="name!=null and name!=''">
@@ -100,7 +100,7 @@
 		UPDATE ht_resident SET is_del=1 WHERE house_no=#{houseNo}
 	</update>
 	<select id="isExist" resultType="java.lang.Integer">
-		SELECT 1 FROM ht_resident
+		SELECT COUNT(1) FROM ht_resident
 		<where>
 			<if test="idcard!=null and idcard!=''">
 				idcard=#{idcard}

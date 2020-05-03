@@ -63,4 +63,11 @@ public interface FeeCountService {
 	* @return
 	*/
 	Object waitPayFeeCount();
+
+	/**
+	* @Title: todayArrearage
+	* @Description: TODO(这里用一句话描述这个方法的作用)
+	* @return
+	*/
+	double todayArrearage();
 }

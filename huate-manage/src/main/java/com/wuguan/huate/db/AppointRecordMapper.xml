@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuguan.huate.db.AppointRecordMapper">
+	<update id="updateData">
+		UPDATE ht_appoint_record SET state=#{state} WHERE id=#{id}
+	</update>
+	<select id="detailData" resultType="com.wuguan.huate.bean.vo.AppointRecordVo">
+		SELECT 
+			r.id,r.title,r.upload_path uploadPath,r.live_id liveId,r.content,r.menu,r.create_time createTime,r.state,
+			r.appoint,r.appoint_phone appointPhone,r.appoint_id appointId,ls.`name` liveName,ls.audit,ls.audit_phone auditPhone,ls.audit_id auditId
+		FROM ht_appoint_record r
+		LEFT JOIN ht_live_serve ls ON r.live_id=ls.id WHERE r.id=#{id}
+	</select>
+	<select id="pageData" resultType="com.wuguan.huate.bean.vo.AppointRecordVo">
+		SELECT 
+			r.id,r.title,r.upload_path uploadPath,r.live_id liveId,r.content,r.menu,r.create_time createTime,r.state,
+			r.appoint,r.appoint_phone appointPhone,r.appoint_id appointId,ls.`name` liveName,ls.audit,ls.audit_phone auditPhone,ls.audit_id auditId
+		FROM ht_appoint_record r
+		LEFT JOIN ht_live_serve ls ON r.live_id=ls.id
+		<where>
+			1=1
+			<if test="param.state!=null and param.state!=''">
+				AND r.state=#{param.state}
+			</if>
+			<if test="workerId!=null and workerId!=''">
+				AND	ls.audit_id=#{workerId}
+			</if>
+		</where>
+		ORDER BY r.create_time DESC
+	</select>
+</mapper>

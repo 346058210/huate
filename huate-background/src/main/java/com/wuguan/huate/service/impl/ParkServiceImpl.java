@@ -103,7 +103,7 @@ public class ParkServiceImpl implements ParkService {
 	@Override
 	public void delData(Integer id) {
 		Integer exist = userParkMapper.isExist(id);
-		if (exist!=null) {
+		if (exist!=0) {
 			throw new CustomException(ResultEnums.BUSINESS.getCode(),"此车位已被绑定，请解除绑定后操作");
 		}
 		parkMapper.delData(id);
@@ -124,7 +124,7 @@ public class ParkServiceImpl implements ParkService {
 	@Override
 	public Boolean isExist(String parkNo, Integer id) {
 		Integer exist=parkMapper.isExist(parkNo, id);
-		if (exist!=null) {
+		if (exist!=0) {
 			return true;
 		}
 		return false;
@@ -145,7 +145,7 @@ public class ParkServiceImpl implements ParkService {
 		UserVo user = JSONObject.parseObject(bean.getUser().toString(), UserVo.class);
 		Park park = getParksByParkNo(parkNo);
 		Integer one=userParkMapper.queryOne(user.getId(),park.getId());
-		if (one!=null) {
+		if (one!=0) {
 			throw new CustomException(ResultEnums.BUSINESS.getCode(),"此车位号已绑定");
 		}
 		userParkMapper.bindPark(user.getId(),park.getId());
@@ -168,7 +168,7 @@ public class ParkServiceImpl implements ParkService {
 	@Override
 	public Boolean isBind(Integer userId, Integer parkId) {
 		Integer bind = userParkMapper.queryOne(userId, parkId);
-		if (bind!=null) {
+		if (bind!=0) {
 			return true;
 		}
 		return false;

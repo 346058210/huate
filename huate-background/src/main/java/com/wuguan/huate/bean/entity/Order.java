@@ -39,5 +39,6 @@ public class Order implements Serializable {
 	private String houseNo;                        //房号
 	private String carNo;                        //车牌号
 	private String parkNo;                        //车位号
+	private Integer checking;                        //是否对账 1 是 0 否
 
 }

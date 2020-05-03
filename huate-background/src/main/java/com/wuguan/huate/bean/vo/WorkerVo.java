@@ -37,6 +37,6 @@ public class WorkerVo implements Serializable {
 	private String sex;                             //性別
 	private String birthDate;                            //出生日期
 	private String nickname;                        //暱稱
-	private Integer job;                         //职业 1管理人员|2 维修工程师|3 保安
+	private Integer roleId;                         //职业 1管理人员|2 维修工程师|3 保安
 	private Integer isUse;                         //1 启用 0 禁用
 }

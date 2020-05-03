@@ -15,6 +15,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wuguan.huate.annotation.Function;
@@ -42,6 +43,7 @@ import com.wuguan.huate.web.result.ResultEnums;
  * @date 2020年4月1日 下午2:36:53
  * 
  */
+@RestController
 public class WorkerController {
 	@Autowired
 	WorkerService workerService;
@@ -58,7 +60,7 @@ public class WorkerController {
 	@RequestMapping(value = "/worker/addData", method = RequestMethod.POST)
 	public ApiResult addData(Worker worker) throws CustomException {
 		workerService.addData(worker);
-		return ApiResult.success();
+		return ApiResult.success(worker.getId());
 	}
 
 	@Function(key = "workerUpdateData")
@@ -129,8 +131,25 @@ public class WorkerController {
 		Worker work = new Worker();
 		work.setId(worker.getId());
 		work.setTokenPc(token);
-		workerService.updateData(work);
+		workerService.updateToken(work);
 		redisHelper.set(token, JSONObject.toJSONString(loginUser), 60 * 60 * 24);
 		return ApiResult.success(loginUser);
+	}
+	
+	/**
+	 * 
+	* @Title: offLineByWorkerId
+	* @Description: 强制下线
+	* @param workerId
+	* @return
+	* @throws CustomException
+	 */
+	@Function(key = "workerOffLineByWorkerId")
+	@ParamsValidate(validateParams = { @Param(key = "workerId", limit = "0,11", type = ParamType.NUMBER) })
+	@RequestMapping(value = "/worker/offLineByWorkerId", method = RequestMethod.POST)
+	public ApiResult offLineByWorkerId(Integer workerId)throws CustomException{
+		workerService.offLineByWorkerId(workerId);
+		return ApiResult.success();
+		
 	}
 }

@@ -121,7 +121,7 @@
 	<select id="getUsersByContent" resultType="com.wuguan.huate.bean.entity.User">
 		SELECT id,`name`,phone,address,create_time createTime,update_time updateTime,sex,birth_date birthDate,nickname,openid,is_use isUse,token FROM ht_user
 		<where>
-			 is_del=2
+			 is_del=0
 			<if test="content!=null and content!=''">
 				AND phone=#{content}
 			</if>
@@ -131,11 +131,12 @@
 	<select id="getListUser" resultType="com.wuguan.huate.bean.entity.User">
 		SELECT id,`name`,phone,address,create_time createTime,update_time updateTime,sex,birth_date birthDate,nickname,openid,is_use isUse,token
 		FROM ht_user
+		WHERE is_del=0
 		ORDER BY create_time DESC
 	</select>
 	<select id="getUserByOrderNo" resultType="com.wuguan.huate.bean.entity.User">
 		SELECT u.id,u.`name`,u.phone,u.address,u.create_time createTime,u.update_time updateTime,u.sex,u.birth_date birthDate,u.nickname,u.openid,u.is_use isUse,u.token FROM ht_user u
 		LEFT JOIN ht_order o ON u.id=o.user_id
-		WHERE o.order_no=#{orderNo}
+		WHERE o.order_no=#{orderNo} AND u.is_del=0
 	</select>
 </mapper>

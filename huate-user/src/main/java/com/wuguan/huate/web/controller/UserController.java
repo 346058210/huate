@@ -63,7 +63,7 @@ public class UserController {
 	 * @param user
 	 * @return
 	 */
-	@ParamsValidate(validateParams = { @Param(key = "code", type = ParamType.ENGLISH_NUMBER) })
+	@ParamsValidate(validateParams = { @Param(key = "code", type = ParamType.CUSTOM) })
 	@RequestMapping(value = "/user/checkUser", method = RequestMethod.POST)
 	public ApiResult checkUser(UserParam param) {
 		String openId = userService.getOpenId(param);

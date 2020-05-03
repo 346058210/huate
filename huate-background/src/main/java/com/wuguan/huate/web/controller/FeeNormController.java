@@ -36,17 +36,16 @@ public class FeeNormController {
 	FeeNormService feeNormService;
 
 	@Function(key = "feeNormAddData")
-	@ParamsValidate(validateParams = { @Param(key = "typeName", type = ParamType.NAME),
+	@ParamsValidate(validateParams = { @Param(key = "typeName", type = ParamType.CUSTOM),
 			@Param(key = "pid", limit = "0,11", type = ParamType.NUMBER),
 			@Param(key = "price", type = ParamType.CUSTOM), 
 			@Param(key = "unit", type = ParamType.CUSTOM),
-			@Param(key = "cycle", limit = "0,11", type = ParamType.NUMBER),
 			@Param(key = "weight", limit = "0,11", type = ParamType.NUMBER),
 			@Param(key = "mtc", limit = "0,11", type = ParamType.NUMBER) })
 	@RequestMapping(value = "/feeNorm/addData", method = RequestMethod.POST)
 	public ApiResult addData(FeeNorm norm) throws CustomException {
 		feeNormService.addData(norm);
-		return ApiResult.success();
+		return ApiResult.success(norm.getId());
 	}
 
 	@Function(key = "feeNormUpdateData")

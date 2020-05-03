@@ -23,6 +23,7 @@ import com.wuguan.huate.bean.entity.Shop;
 import com.wuguan.huate.bean.params.HousePageParam;
 import com.wuguan.huate.bean.vo.HouseM;
 import com.wuguan.huate.bean.vo.HouseVo;
+import com.wuguan.huate.bean.vo.UserHouseVo;
 import com.wuguan.huate.bean.vo.UserVo;
 import com.wuguan.huate.comm.CustomException;
 import com.wuguan.huate.comm.PageInfo;
@@ -144,14 +145,18 @@ public class HouseServiceImpl implements HouseService {
 			throw new CustomException(ResultEnums.BUSINESS.getCode(), "此房号已存在，请确认");
 		}
 		houseMapper.addData(param);
-		residentService.delByHouseNo(param.getHouseNo());
-		residentService.addBatch(param.getResidents());
+		if (param.getResidents()!=null&&param.getResidents().size()!=0) {
+			residentService.delByHouseNo(param.getHouseNo());
+			residentService.addBatch(param.getResidents());
+		}else {
+			residentService.delByHouseNo(param.getHouseNo());
+		}
 	}
 
 	@Override
 	public Boolean isExist(String houseNo, Integer id) {
 		Integer exist = houseMapper.isExist(houseNo, id);
-		if (exist!=null) {
+		if (exist!=0) {
 			return true;
 		}
 		return false;
@@ -167,8 +172,12 @@ public class HouseServiceImpl implements HouseService {
 			throw new CustomException(ResultEnums.BUSINESS.getCode(), "此房号已存在，请确认");
 		}
 		houseMapper.updateData(param);
-		residentService.delByHouseNo(param.getHouseNo());
-		residentService.addBatch(param.getResidents());
+		if (param.getResidents()!=null&&param.getResidents().size()!=0) {
+			residentService.delByHouseNo(param.getHouseNo());
+			residentService.addBatch(param.getResidents());
+		}else {
+			residentService.delByHouseNo(param.getHouseNo());
+		}
 	}
 
 	@Override
@@ -176,7 +185,7 @@ public class HouseServiceImpl implements HouseService {
 		House detailData = houseMapper.detailData(id);
 		Integer exist=userHouseMapper.isExist(id);
 		List<Resident> list = residentService.getResidentsByHouseNo(detailData.getHouseNo());
-		if (exist!=null||list.size()>0) {
+		if (exist!=0||list.size()>0) {
 			throw new CustomException(ResultEnums.BUSINESS.getCode(), "此房号被绑定，请解绑后再操作");
 		}
 		detailData.setIsDel(1);
@@ -189,7 +198,7 @@ public class HouseServiceImpl implements HouseService {
 		UserVo user = JSONObject.parseObject(bean.getUser().toString(), UserVo.class);
 		House house = getHouseByHouseNo(houseNo);
 		Integer one=userHouseMapper.queryOne(user.getId(),house.getId());
-		if (one!=null) {
+		if (one!=0) {
 			throw new CustomException(ResultEnums.BUSINESS.getCode(),"此房号已绑定");
 		}
 		userHouseMapper.bindHouse(user.getId(),house.getId());
@@ -222,7 +231,7 @@ public class HouseServiceImpl implements HouseService {
 	@Override
 	public Boolean isBind(Integer houseId, Integer userId) {
 		Integer isBind=userHouseMapper.queryOne(userId, houseId);
-		if (isBind!=null) {
+		if (isBind!=0) {
 			return true;
 		}
 		return false;
@@ -239,6 +248,24 @@ public class HouseServiceImpl implements HouseService {
 	@Override
 	public void updateNoticeTime(House house) {
 		houseMapper.updateData(house);
+	}
+
+	@Override
+	public List<UserHouseVo> queryBindUser(List<String> list) {
+		return houseMapper.queryBindUser(list);
+	}
+
+	@Override
+	public List<House> getdueTimeHouses() {
+		return houseMapper.getdueTimeHouses();
+	}
+
+	/**
+	 * 查询所有商铺
+	 */
+	@Override
+	public List<House> queryShops() {
+		return houseMapper.queryShops();
 	}
 
 }

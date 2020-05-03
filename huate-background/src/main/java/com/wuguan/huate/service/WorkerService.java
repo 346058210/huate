@@ -8,6 +8,8 @@
 */
 package com.wuguan.huate.service;
 
+import java.util.List;
+
 import com.wuguan.huate.bean.entity.Worker;
 import com.wuguan.huate.bean.params.WorkerParam;
 
@@ -27,6 +29,7 @@ public interface WorkerService {
 	*/
 	void addData(Worker worker);
 	void updateData(Worker worker);
+	void updateToken(Worker worker);
 	
 	Boolean isExist(String phone,Integer id);
 	/**
@@ -62,5 +65,18 @@ public interface WorkerService {
 	* @return
 	*/
 	Worker getWorkerByPhone(String phone);
+	/**
+	* @Title: queryWorkersByRoleId
+	* @Description: TODO(这里用一句话描述这个方法的作用)
+	* @param roleId
+	* @return
+	*/
+	List<Worker> queryWorkersByRoleId(Integer roleId);
+	/**
+	* @Title: offLineByWorkerId
+	* @Description: TODO(这里用一句话描述这个方法的作用)
+	* @param workerId
+	*/
+	void offLineByWorkerId(Integer workerId);
 
 }

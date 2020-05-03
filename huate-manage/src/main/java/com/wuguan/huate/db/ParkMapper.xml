@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuguan.huate.db.ParkMapper">
+	<resultMap type="com.wuguan.huate.bean.vo.ParkVo" id="ParkVo">
+		<id property="id" column="id"/>
+		<result property="houseNo" column="house_no" />
+		<result property="carNo" column="car_no" />
+		<result property="parkNo" column="park_no" />
+		<result property="ownerOne" column="owner_one"/>
+		<result property="ownerTwo" column="owner_two"/>
+		<result property="phoneOne" column="phone_one"/>
+		<result property="phoneTwo" column="phone_two"/>
+		<result property="type" column="type"/>
+		<result property="dueTime" column="due_time"/>
+		<result property="normId" column="norm_id"/>
+		<result property="area" column="area"/>
+		<result property="genre" column="genre"/>
+		<result property="noticeTime" column="notice_time"/>
+		<association property="norm" column="norm_id" javaType="com.wuguan.huate.bean.entity.FeeNorm">
+			<id property="id" column="normId"/>
+			<result property="typeName" column="type_name" />
+			<result property="pid" column="pid" />
+			<result property="type" column="n_type" />
+			<result property="price" column="price" />
+			<result property="unit" column="unit" />
+			<result property="cycle" column="cycle" />
+			<result property="weight" column="weight" />
+			<result property="mtc" column="mtc" />
+			<result property="remark" column="remark" />
+		</association>
+	</resultMap>
+
+
+	<select id="getParksByParkNo" resultType="com.wuguan.huate.bean.entity.Park">
+		SELECT id,house_no houseNo,car_no carNo,park_no parkNo,owner_one ownerOne,owner_two ownerTwo,
+		phone_one phoneOne,phone_two phoneTwo,type,due_time dueTime,norm_id normId,area,genre
+		FROM ht_park WHERE park_no=#{parkNo} AND is_del=0
+		
+	</select>
+	<select id="queryParkByCarNo" resultType="com.wuguan.huate.bean.entity.Park">
+		SELECT id,house_no houseNo,car_no carNo,park_no parkNo,owner_one ownerOne,owner_two ownerTwo,
+		phone_one phoneOne,phone_two phoneTwo,type,due_time dueTime,norm_id normId,area,genre
+		FROM ht_park WHERE car_no LIKE CONCAT('%',#{carNo},'%') AND is_del=0
+	</select>
+	<select id="detailData" resultMap="ParkVo">
+		SELECT 
+			p.id,p.house_no,p.car_no,p.park_no,p.owner_one,p.owner_two,p.phone_one,p.phone_two,p.type,p.due_time,p.norm_id,p.area,p.genre,
+			n.id normId,n.type_name,n.pid,n.type n_type,n.price,n.unit,n.cycle,n.weight,n.mtc,n.remark
+		FROM ht_park p
+		LEFT JOIN ht_fee_norm n ON p.norm_id=n.id
+		WHERE p.id=#{id} AND p.is_del=0
+	</select>
+</mapper>

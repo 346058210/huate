@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wuguan.huate.db.ResourcesMapper">
 	<select id="isExist" resultType="java.lang.Integer">
-		SELECT 1 FROM ht_resources
+		SELECT COUNT(1) FROM ht_resources
 		<where>
 			<if test="resName!=null and resName!=''">
 				res_name=#{resName}
@@ -13,7 +13,7 @@
 		</where>
 	</select>
 	
-	<insert id="addData">
+	<insert id="addData" keyProperty="id" useGeneratedKeys="true">
 		INSERT INTO ht_resources
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<if test="resName!=null and resName!=''">
@@ -32,7 +32,16 @@
 				res_key,
 			</if>
 			<if test="weight!=null and weight!=''">
-				weight
+				weight,
+			</if>
+			<if test="icon!=null and icon!=''">
+				icon,
+			</if>
+			<if test="redirect!=null and redirect!=''">
+				redirect,
+			</if>
+			<if test="component!=null and component!=''">
+				component
 			</if>
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -52,7 +61,16 @@
 				#{resKey},
 			</if>
 			<if test="weight!=null and weight!=''">
-				#{weight}
+				#{weight},
+			</if>
+			<if test="icon!=null and icon!=''">
+				#{icon},
+			</if>
+			<if test="redirect!=null and redirect!=''">
+				#{redirect},
+			</if>
+			<if test="component!=null and component!=''">
+				#{component}
 			</if>
 		</trim>
 	</insert>
@@ -76,7 +94,16 @@
 				res_key=#{resKey},
 			</if>
 			<if test="weight!=null and weight!=''">
-				weight=#{weight}
+				weight=#{weight},
+			</if>
+			<if test="icon!=null and icon!=''">
+				icon=#{icon},
+			</if>
+			<if test="redirect!=null and redirect!=''">
+				redirect=#{redirect},
+			</if>
+			<if test="component!=null and component!=''">
+				component=#{component}
 			</if>
 		</set>
 		WHERE id=#{id}
@@ -89,21 +116,21 @@
 	</update>
 	
 	<select id="getResourcesByFatherId" resultType="com.wuguan.huate.bean.entity.Resources">
-		SELECT id,res_name resName,res_type resType,res_path resPath,pid,res_key resKey,is_use isUse,weight
+		SELECT id,res_name resName,res_type resType,res_path resPath,pid,res_key resKey,is_use isUse,weight,icon,redirect,component
 		FROM ht_resources WHERE pid=#{pid}
 	</select>
 	<select id="resources" resultType="com.wuguan.huate.bean.entity.Resources">
-		SELECT id,res_name resName,res_type resType,res_path resPath,pid,res_key resKey,is_use isUse,weight FROM ht_resources
+		SELECT id,res_name resName,res_type resType,res_path resPath,pid,res_key resKey,is_use isUse,weight,icon,redirect,component FROM ht_resources
 	</select>
 	<select id="resourcesByRoleId" resultType="com.wuguan.huate.bean.entity.Resources">
 		SELECT 
-			r.id,r.res_name resName,r.res_type resType,r.res_path resPath,r.pid,r.res_key resKey,r.is_use isUse,r.weight 
+			r.id,r.res_name resName,r.res_type resType,r.res_path resPath,r.pid,r.res_key resKey,r.is_use isUse,r.weight,r.icon,r.redirect,r.component 
 		FROM ht_resources r
 		LEFT JOIN ht_role_res rr ON r.id=rr.res_id
 		WHERE rr.role_id=#{roleId}
 	</select>
 	<select id="recursionByPid" resultType="com.wuguan.huate.bean.entity.Resources">
-		SELECT id,res_name resName,res_type resType,res_path resPath,pid,res_key resKey,is_use isUse,weight FROM (
+		SELECT id,res_name resName,res_type resType,res_path resPath,pid,res_key resKey,is_use isUse,weight,icon,redirect,component FROM (
 			SELECT *,
 			IF(FIND_IN_SET(pid,@pids)>0,@pids:=CONCAT(@pids,',',id),'0') childs
 			FROM(
@@ -114,7 +141,7 @@
 	</select>
 	<select id="getResourcesByWorkerId" resultType="com.wuguan.huate.bean.entity.Resources">
 		SELECT 
-			r.id,r.res_name resName,r.res_type resType,r.res_path resPath,r.pid,r.res_key resKey,r.is_use isUse,r.weight
+			r.id,r.res_name resName,r.res_type resType,r.res_path resPath,r.pid,r.res_key resKey,r.is_use isUse,r.weight,r.`icon`,r.redirect,r.component
 		FROM ht_resources r
 		LEFT JOIN ht_role_res rr ON r.id=rr.res_id
 		LEFT JOIN ht_worker_role wr ON wr.role_id=rr.role_id

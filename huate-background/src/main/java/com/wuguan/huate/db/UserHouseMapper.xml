@@ -2,13 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wuguan.huate.db.UserHouseMapper">
 	<select id="isUse" resultType="java.lang.Integer">
-		SELECT 1 FROM ht_user_house WHERE user_id=#{userId}
+		SELECT COUNT(1) FROM ht_user_house WHERE user_id=#{userId}
 	</select>
 	<select id="isExist" resultType="java.lang.Integer">
-		SELECT 1 FROM ht_user_house WHERE house_id=#{houseId}
+		SELECT COUNT(1) FROM ht_user_house WHERE house_id=#{houseId}
 	</select>
 	<select id="queryOne" resultType="java.lang.Integer">
-		SELECT 1 FROM ht_user_house WHERE house_id=#{houseId} AND user_id=#{userId}
+		SELECT COUNT(1) FROM ht_user_house WHERE house_id=#{houseId} AND user_id=#{userId}
 	</select>
 	<insert id="bindHouse">
 		INSERT INTO ht_user_house (user_id,house_id) VALUES (#{userId},#{houseId})

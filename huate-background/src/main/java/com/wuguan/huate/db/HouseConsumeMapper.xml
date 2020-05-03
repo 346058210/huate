@@ -1,47 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wuguan.huate.db.HouseConsumeMapper">
-	<insert id="addBatch">
-		INSERT INTO ht_house_consume (house_no,upload_time,is_pay,type,`month`,money,dosage,`explain`) VALUES
+	<insert id="addBatch" keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_house_consume (house_no,upload_time,is_pay,type,`month`,money,dosage,`explain`,start_quan,end_quan) VALUES
 		<foreach collection="consumes" item="consume" index="index" separator=",">
 			(#{consume.houseNo},#{consume.uploadTime},#{consume.isPay},#{consume.type},#{consume.month},
-			#{consume.money},#{consume.dosage},#{consume.explain})
+			#{consume.money},#{consume.dosage},#{consume.explain},#{consume.startQuan},#{consume.endQuan})
 		</foreach>
 	</insert>
 	
 	<select id="exportExcel" resultType="com.wuguan.huate.bean.entity.HouseConsume">
 		SELECT id,house_no houseNo,upload_time uploadTime,is_pay isPay,pay_time payTime,type,`month`,
-		money,dosage,`explain` FROM ht_house_consume
+		money,dosage,`explain`,start_quan startQuan,end_quan endQuan FROM ht_house_consume
 		<where>
+			1=1
 			<if test="content!=null and content!=''">
-				house_no=#{content}
+				AND house_no=#{content}
 			</if>
 			<if test="month!=null and month!=''">
-				`month`=#{month}
+				AND `month`=#{month}
 			</if>
 			<if test="isPay!=null and isPay!=''">
-				is_pay=#{isPay}
+				AND is_pay=#{isPay}
 			</if>
 			<if test="type!=null and type!=''">
-				type=#{type}
+				AND type=#{type}
 			</if>
 		</where>
 		ORDER BY id ASC
 	</select>
 	<select id="detailData" resultType="com.wuguan.huate.bean.entity.HouseConsume">
 		SELECT id,house_no houseNo,upload_time uploadTime,is_pay isPay,pay_time payTime,type,`month`,
-		money,dosage,`explain` FROM ht_house_consume 
+		money,dosage,`explain`,start_quan startQuan,end_quan endQuan FROM ht_house_consume 
 		WHERE id=#{id}
 	</select>
 	<select id="getHouseConsumeByHouseNo" resultType="com.wuguan.huate.bean.entity.HouseConsume">
 		SELECT id,house_no houseNo,upload_time uploadTime,is_pay isPay,pay_time payTime,type,`month`,
-		money,dosage,`explain` FROM ht_house_consume 
+		money,dosage,`explain`,start_quan startQuan,end_quan endQuan FROM ht_house_consume 
 		WHERE house_no=#{houseNo} AND type=#{type} AND is_pay=0
 		ORDER BY `month` ASC
 	</select>
 	<select id="getListDataUnPay" resultType="com.wuguan.huate.bean.entity.HouseConsume">
 		SELECT id,house_no houseNo,upload_time uploadTime,is_pay isPay,pay_time payTime,type,`month`,
-		money,dosage,`explain` FROM ht_house_consume 
+		money,dosage,`explain`,start_quan startQuan,end_quan endQuan FROM ht_house_consume 
 		WHERE house_no=#{houseNo} AND is_pay=0
 		ORDER BY `month` ASC
 	</select>
@@ -67,7 +68,7 @@
 				type=#{type},
 			</if>
 			<if test="month!=null and month!=''">
-				month=#{month},
+				`month`=#{month},
 			</if>
 			<if test="money!=null and money!=''">
 				money=#{money},
@@ -76,9 +77,72 @@
 				dosage=#{dosage},
 			</if>
 			<if test="explain!=null and explain!=''">
-				explain=#{explain}
+				`explain`=#{explain},
+			</if>
+			<if test="startQuan!=null and startQuan!=''">
+				start_qua#{startQuan},
+			</if>
+			<if test="endQuan!=null and endQuan!=''">
+				end_quan=#{endQuan}
 			</if>
 		</set>
 		WHERE id=#{id}
 	</update>
+	<select id="waterEelecticFeeCount" resultType="java.util.Map">
+		SELECT
+			SUM(CASE hc.type WHEN 3 THEN hc.money ELSE 0.0 END) water,
+			SUM(CASE hc.type WHEN 4 THEN hc.money ELSE 0.0 END) electic,
+			tmp.`MONTH` `month`
+		FROM ht_house_consume hc
+		RIGHT JOIN 
+		(	SELECT DATE_FORMAT(NOW()-INTERVAL 0 MONTH,'%Y.%m') MONTH
+			UNION ALL
+			SELECT DATE_FORMAT(NOW()-INTERVAL 1 MONTH,'%Y.%m') MONTH
+			UNION ALL
+			SELECT DATE_FORMAT(NOW()-INTERVAL 2 MONTH,'%Y.%m') MONTH
+			UNION ALL
+			SELECT DATE_FORMAT(NOW()-INTERVAL 3 MONTH,'%Y.%m') MONTH
+			UNION ALL
+			SELECT DATE_FORMAT(NOW()-INTERVAL 4 MONTH,'%Y.%m') MONTH
+			UNION ALL
+			SELECT DATE_FORMAT(NOW()-INTERVAL 5 MONTH,'%Y.%m') MONTH
+			UNION ALL
+			SELECT DATE_FORMAT(NOW()-INTERVAL 6 MONTH,'%Y.%m') MONTH
+			UNION ALL
+			SELECT DATE_FORMAT(NOW()-INTERVAL 7 MONTH,'%Y.%m') MONTH
+			UNION ALL
+			SELECT DATE_FORMAT(NOW()-INTERVAL 8 MONTH,'%Y.%m') MONTH
+			UNION ALL
+			SELECT DATE_FORMAT(NOW()-INTERVAL 9 MONTH,'%Y.%m') MONTH
+			UNION ALL
+			SELECT DATE_FORMAT(NOW()-INTERVAL 10 MONTH,'%Y.%m') MONTH
+			UNION ALL
+			SELECT DATE_FORMAT(NOW()-INTERVAL 11 MONTH,'%Y.%m') MONTH ) tmp ON hc.`month`=tmp.MONTH
+		GROUP BY tmp.MONTH
+		ORDER BY tmp.MONTH ASC
+	</select>
+	<select id="pageData" resultType="com.wuguan.huate.bean.entity.HouseConsume">
+		SELECT id,house_no houseNo,upload_time uploadTime,is_pay isPay,pay_time payTime,type,`month`,
+		money,dosage,`explain`,start_quan startQuan,end_quan endQuan FROM ht_house_consume 
+		<where>
+			1=1
+			<if test="content!=null and content!=''">
+				AND house_no LIKE CONCAT('%',#{content},'%')
+			</if>
+			<if test="month!=null and month!=''">
+				AND `month`=DATE_FORMAT(#{month},'%Y.%m')
+			</if>
+			<if test="isPay!=null and isPay!=''">
+				AND is_pay=#{isPay}
+			</if>
+			<if test="type!=null and type!=''">
+				AND type=#{type}
+			</if>
+		</where>
+		ORDER BY id DESC
+	</select>
+	<select id="querySameMonthData" resultType="com.wuguan.huate.bean.entity.HouseConsume">
+		SELECT id,house_no houseNo,upload_time uploadTime,is_pay isPay,pay_time payTime,type,`month`,
+		money,dosage,`explain`,start_quan startQuan,end_quan endQuan FROM ht_house_consume WHERE `month`=DATE_FORMAT(NOW(),'%Y.%m')
+	</select>
 </mapper>

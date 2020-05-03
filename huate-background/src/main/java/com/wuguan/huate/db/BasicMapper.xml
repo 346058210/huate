@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuguan.huate.db.BasicMapper">
+	
+	<resultMap type="com.wuguan.huate.bean.vo.BasicVo" id="BasicVo">
+		<id property="id" column="id"/>
+		<result property="company" column="company" />
+		<result property="workTime" column="workTime" />
+		<result property="phone" column="phone" />
+		<result property="address" column="address"/>
+		<result property="uploadPath" column="upload_path"/>
+		<result property="repairsTime" column="repairs_time"/>
+		<result property="visitorTime" column="visitor_time"/>
+		<collection property="Audits" ofType="com.wuguan.huate.bean.entity.Audit">
+			<id property="id" column="auditId"/>
+			<result property="workerId" column="workerId" />
+			<result property="createTime" column="createTime" />
+			<result property="path" column="path" />
+			<result property="name" column="name" />
+			<result property="phone" column="auditphone" />
+			<result property="directType" column="directType" />
+			<result property="basicId" column="basicId" />
+			<!-- <result property="company" column="company" /> -->
+			<result property="remark" column="remark" />
+		</collection>
+	</resultMap>
+	
+	<insert id="addData" keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_basic
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="company!=null and company!=''">
+				company,
+			</if>
+			<if test="workTime!=null and workTime!=''">
+				work_time,
+			</if>
+			<if test="phone!=null and phone!=''">
+				phone,
+			</if>
+			<if test="address!=null and address!=''">
+				address,
+			</if>
+			<if test="uploadPath!=null and uploadPath!=''">
+				upload_path,
+			</if>
+			<if test="repairsTime!=null and repairsTime!=''">
+				repairs_time,
+			</if>
+			<if test="visitorTime!=null and visitorTime!=''">
+				visitor_time
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="company!=null and company!=''">
+				#{company},
+			</if>
+			<if test="workTime!=null and workTime!=''">
+				#{workTime},
+			</if>
+			<if test="phone!=null and phone!=''">
+				#{phone},
+			</if>
+			<if test="address!=null and address!=''">
+				#{address},
+			</if>
+			<if test="uploadPath!=null and uploadPath!=''">
+				#{uploadPath},
+			</if>
+			<if test="repairsTime!=null and repairsTime!=''">
+				#{repairsTime},
+			</if>
+			<if test="visitorTime!=null and visitorTime!=''">
+				#{visitorTime}
+			</if>
+		</trim>
+	</insert>
+	<update id="updateData">
+		UPDATE ht_basic 
+		<set>
+			<if test="company!=null and company!=''">
+				company=#{company},
+			</if>
+			<if test="workTime!=null and workTime!=''">
+				work_time=#{workTime},
+			</if>
+			<if test="phone!=null and phone!=''">
+				phone=#{phone},
+			</if>
+			<if test="address!=null and address!=''">
+				address=#{address},
+			</if>
+			<if test="uploadPath!=null">
+				upload_path=#{uploadPath},
+			</if>
+			<if test="repairsTime!=null and repairsTime!=''">
+				repairs_time=#{repairsTime},
+			</if>
+			<if test="visitorTime!=null and visitorTime!=''">
+				visitor_time=#{visitorTime}
+			</if>
+		</set>
+		WHERE id=#{id}
+	</update>
+	<delete id="delData">
+		DELETE FROM ht_basic WHERE id=#{id}
+	</delete>
+	<select id="detailData" resultMap="BasicVo">
+		SELECT 
+			b.id, b.company, b.work_time workTime, b.phone, b.address,a.id auditId,a.create_time createTime,b.repairs_time,b.visitor_time,
+			a.worker_id workerId,a.`name`,a.phone auditphone,a.path,a.direct_type directType,a.basic_id basicId,b.company,b.upload_path
+		FROM ht_basic b
+		LEFT JOIN ht_audit a ON a.basic_id=b.id
+		WHERE b.id=#{id}
+		ORDER BY b.id DESC
+		<!-- SELECT 
+			b.id, b.company, b.work_time workTime, b.phone, b.address,a.id auditId,a.create_time createTime,
+			a.worker_id workerId,a.`name`,a.phone,a.path,a.direct_type directType,a.basic_id basicId,b.company,b.upload_path
+		FROM ht_basic b,ht_audit a 
+		WHERE b.id=#{id} AND a.basic_id=b.id
+		ORDER BY b.id DESC -->
+	</select>
+	<select id="queryData" resultMap="BasicVo">
+		SELECT 
+			b.id, b.company, b.work_time workTime, b.phone, b.address,a.id auditId,a.create_time createTime,b.repairs_time,b.visitor_time,
+			a.worker_id workerId,a.`name`,a.phone auditphone,a.path,a.direct_type directType,a.basic_id basicId,b.company,b.upload_path
+		FROM ht_basic b
+		LEFT JOIN ht_audit a ON a.basic_id=b.id
+		<where>
+			1=1
+			<if test="company!=null and company!=''">
+				AND b.company=#{company}
+			</if>
+		</where>
+		ORDER BY b.id DESC
+	</select>
+	<select id="isExist" resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM ht_basic 
+		<where>
+			1=1
+			<if test="company!=null and company!=''">
+				AND	company=#{company}
+			</if>
+			<if test="id!=null and id!=''">
+				AND id!=#{id}
+			</if>
+		</where>
+	</select>
+</mapper>

@@ -13,11 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.wuguan.huate.annotation.Function;
 import com.wuguan.huate.annotation.Param;
 import com.wuguan.huate.annotation.ParamType;
 import com.wuguan.huate.annotation.ParamsValidate;
-import com.wuguan.huate.bean.entity.Notification;
+import com.wuguan.huate.bean.params.PageParams;
 import com.wuguan.huate.comm.CustomException;
 import com.wuguan.huate.service.NotificationService;
 import com.wuguan.huate.web.result.ApiResult;
@@ -34,14 +33,17 @@ public class NotificationController {
 	@Autowired
 	NotificationService notificationService;
 
-	@Function(key = "notificationPublishNotification")
-	@ParamsValidate(validateParams = { @Param(key = "publisher", type = ParamType.CUSTOM),
-			@Param(key = "content", type = ParamType.CUSTOM) })
-	@RequestMapping(value = "/notification/publishNotification", method = RequestMethod.POST)
-	public ApiResult publishNotification(Notification notification) throws CustomException {
-		notificationService.publishNotification(notification);
-		return ApiResult.success();
-
+	//@ParamsValidate(validateParams = { @Param(key = "page", limit = "0,11", type = ParamType.NUMBER),
+	//		@Param(key = "rows", limit = "0,11", type = ParamType.NUMBER) })
+	@RequestMapping(value = "/notification/queryNotifications", method = RequestMethod.GET)
+	public ApiResult queryNotifications(PageParams params) throws CustomException {
+		return ApiResult.success(notificationService.queryNotifications(params));
 	}
 
+	@ParamsValidate(validateParams = { @Param(key = "id", limit = "0,11", type = ParamType.NUMBER) })
+	@RequestMapping(value = "/notification/detailData", method = RequestMethod.GET)
+	public ApiResult detailData(Integer id) throws CustomException {
+		return ApiResult.success(notificationService.detailData(id));
+	}
+	
 }

@@ -8,8 +8,9 @@
 */
 package com.wuguan.huate.bean.vo;
 
-import com.excel.poi.annotation.ExportField;
+import java.util.List;
 
+import com.excel.poi.annotation.ExportField;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -43,5 +44,13 @@ public class OrderExcel {
 	private String isClose;                        //是否关闭订单 1 是  0 否
 	@ExportField(columnName = "订单创建时间")
 	private String createTime;                        //是否关闭订单 1 是  0 否
+	@ExportField(columnName = "房号")
+	private String houseNo;                        //房号
+	@ExportField(columnName = "车牌号")
+	private String carNo;                        //车牌号
+	@ExportField(columnName = "车位号")
+	private String parkNo;                        //车位号
+	//@ExportField(columnName = "订单明细")
+	private List<OrderItemExcel> items;
 
 }

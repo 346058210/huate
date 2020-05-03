@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PageParams {
 
-	private int page; // 分页-页码
+	private int page=1; // 分页-页码
 
-	private int rows; // 分页-条数
+	private int rows=10; // 分页-条数
 
 }

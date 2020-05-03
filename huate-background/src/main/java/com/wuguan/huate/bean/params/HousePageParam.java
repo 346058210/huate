@@ -27,4 +27,7 @@ public class HousePageParam extends PageParams {
 	private String content;
 	private Integer type;
 	private Integer state;
+	private Integer building;
+	private Integer unit;
+	private Integer room;
 }

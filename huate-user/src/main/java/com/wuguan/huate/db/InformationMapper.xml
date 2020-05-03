@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuguan.huate.db.InformationMapper">
+	<select id="queryInformations" resultType="com.wuguan.huate.bean.entity.Information">
+		SELECT
+			id,title,content,create_time createTime,upload_path uploadPath,is_del isDel
+		FROM ht_information WHERE is_del=0
+		ORDER BY create_time DESC
+	</select>
+	<select id="detailData" resultType="com.wuguan.huate.bean.entity.Information">
+		SELECT
+			id,title,content,create_time createTime,upload_path uploadPath,is_del isDel
+		FROM ht_information WHERE id=#{id}
+	</select>
+</mapper>

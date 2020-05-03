@@ -11,7 +11,7 @@
 	
 	<select id="exportExcel" resultType="com.wuguan.huate.bean.entity.HouseConsume">
 		SELECT id,house_no houseNo,upload_time uploadTime,is_pay isPay,pay_time payTime,type,`month`,
-		money,dosage,`explain` FROM ht_house_consume
+		money,dosage,`explain`,start_quan startQuan,end_quan endQuan FROM ht_house_consume
 		<where>
 			<if test="content!=null and content!=''">
 				house_no=#{content}
@@ -30,18 +30,18 @@
 	</select>
 	<select id="detailData" resultType="com.wuguan.huate.bean.entity.HouseConsume">
 		SELECT id,house_no houseNo,upload_time uploadTime,is_pay isPay,pay_time payTime,type,`month`,
-		money,dosage,`explain` FROM ht_house_consume 
+		money,dosage,`explain`,start_quan startQuan,end_quan endQuan FROM ht_house_consume 
 		WHERE id=#{id}
 	</select>
 	<select id="getHouseConsumeByHouseNo" resultType="com.wuguan.huate.bean.entity.HouseConsume">
 		SELECT id,house_no houseNo,upload_time uploadTime,is_pay isPay,pay_time payTime,type,`month`,
-		money,dosage,`explain` FROM ht_house_consume 
+		money,dosage,`explain`,start_quan startQuan,end_quan endQuan FROM ht_house_consume 
 		WHERE house_no=#{houseNo} AND type=#{type} AND is_pay=0
 		ORDER BY `month` ASC
 	</select>
 	<select id="getListDataUnPay" resultType="com.wuguan.huate.bean.entity.HouseConsume">
 		SELECT id,house_no houseNo,upload_time uploadTime,is_pay isPay,pay_time payTime,type,`month`,
-		money,dosage,`explain` FROM ht_house_consume 
+		money,dosage,`explain`,start_quan startQuan,end_quan endQuan FROM ht_house_consume 
 		WHERE house_no=#{houseNo} AND is_pay=0
 		ORDER BY `month` ASC
 	</select>

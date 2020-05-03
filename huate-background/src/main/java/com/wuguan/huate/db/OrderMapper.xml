@@ -83,37 +83,51 @@
 	<update id="updateOrder">
 		UPDATE ht_order SET pay_time=#{payTime},state=1 WHERE order_no=#{orderNo}
 	</update>
+	<update id="verifyOrder">
+		UPDATE ht_order SET checking=#{checking} WHERE id=#{id}
+	</update>
 	<select id="checkOrder" resultType="com.wuguan.huate.bean.entity.Order">
 		SELECT id,order_no orderNo,money,state,pay_time payTime,user_id userId,`desc`,
-		is_close isClose,create_time createTime,house_no houseNo,car_no carNo,park_no parkNo FROM ht_order WHERE is_close=0 AND state!=1 AND state!=0
+		is_close isClose,create_time createTime,house_no houseNo,car_no carNo,park_no parkNo,checking FROM ht_order WHERE is_close=0 AND state!=1 AND state!=0
 	</select>
 	<select id="detail" resultType="com.wuguan.huate.bean.entity.Order">
 		SELECT id,order_no orderNo,money,state,pay_time payTime,user_id userId,`desc`,
-		is_close isClose,create_time createTime,house_no houseNo,car_no carNo,park_no parkNo FROM ht_order WHERE id=#{id}
+		is_close isClose,create_time createTime,house_no houseNo,car_no carNo,park_no parkNo,checking FROM ht_order WHERE id=#{id}
 	</select>
 	<select id="detailDataByOrderNo" resultType="com.wuguan.huate.bean.entity.Order">
 		SELECT id,order_no orderNo,money,state,pay_time payTime,user_id userId,`desc`,
-		is_close isClose,create_time createTime,house_no houseNo,car_no carNo,park_no parkNo FROM ht_order WHERE order_no=#{orderNo}
+		is_close isClose,create_time createTime,house_no houseNo,car_no carNo,park_no parkNo,checking FROM ht_order WHERE order_no=#{orderNo}
 	</select>
 	<select id="pageData" resultType="com.wuguan.huate.bean.entity.Order">
 		SELECT id,order_no orderNo,money,state,pay_time payTime,user_id userId,`desc`,
-		is_close isClose,create_time createTime,house_no houseNo,car_no carNo,park_no parkNo FROM ht_order
+		is_close isClose,create_time createTime,house_no houseNo,car_no carNo,park_no parkNo,checking FROM ht_order
 		<where>
-			<if test="state!=null and state!=null">
-				state=#{state}
+			1=1
+			<if test="state!=null and state!=''">
+				AND state=#{state}
 			</if>
-			<if test="content!=null and content!=null">
+			<if test="content!=null and content!=''">
 				AND CONCAT_WS(',',order_no) LIKE CONCAT('%',#{content},'%')
+			</if>
+			<if test="startTime!=null and startTime!=''">
+				AND DATE_FORMAT(pay_time,'%Y-%m-%d') &gt;=#{startTime}
+			</if>
+			<if test="endTime!=null and endTime!=''">
+				AND DATE_FORMAT(pay_time,'%Y-%m-%d') &lt;=#{endTime}
+			</if>
+			<if test="checking!=null and checking!=''">
+				AND checking=#{checking}
 			</if>
 		</where>
 		ORDER BY create_time DESC
 	</select>
 	<select id="pageDataByUser" resultType="com.wuguan.huate.bean.entity.Order">
 		SELECT id,order_no orderNo,money,state,pay_time payTime,user_id userId,`desc`,
-		is_close isClose,create_time createTime,house_no houseNo,car_no carNo,park_no parkNo FROM ht_order
+		is_close isClose,create_time createTime,house_no houseNo,car_no carNo,park_no parkNo,checking FROM ht_order
 		<where>
+			1=1
 			<if test="param.state!=null and param.state!=null">
-				state=#{param.state}
+				AND state=#{param.state}
 			</if>
 			<if test="userId!=null and userId!=null">
 				AND user_id=#{userId}
@@ -122,38 +136,47 @@
 		ORDER BY create_time DESC
 	</select>
 	
-	<select id="getOrders" resultType="com.wuguan.huate.bean.entity.Order">
-		SELECT id,order_no orderNo,money,state,pay_time payTime,user_id userId,`desc`,
-		is_close isClose,create_time createTime,house_no houseNo,car_no carNo,park_no parkNo FROM ht_order
-		<where>
-			<if test="state!=null and state!=null">
-				state=#{state}
-			</if>
-			<if test="content!=null and content!=null">
-				AND CONCAT_WS(',',order_no) LIKE CONCAT('%',#{content},'%')
-			</if>
-		</where>
-		ORDER BY create_time DESC
+	<select id="getOrders" resultType="com.wuguan.huate.bean.vo.OrderItemExcel">
+		SELECT 
+			oi.id,oi.order_no orderNo,oi.`name`,oi.num,oi.money,oi.due_time dueTime,oi.`desc`,
+			oi.fee_type_id feeType,o.state,o.pay_time payTime,u.phone,o.money totalMoney
+		FROM ht_order_item oi
+		RIGHT JOIN ht_order o ON oi.order_no=o.order_no
+		LEFT JOIN ht_user u ON oi.user_id=u.id
+		WHERE 1=1
+		<if test="startTime!=null and startTime!=''">
+			AND DATE_FORMAT(o.pay_time,'%Y-%m-%d')&gt;=#{startTime}
+		</if>
+		<if test="endTime!=null  and endTime!=''">
+			 AND DATE_FORMAT(o.pay_time,'%Y-%m-%d')&lt;=#{endTime} 
+		</if>
+		<if test="feeType!=null and feeType!=''">
+			AND oi.fee_type_id=#{feeType}
+		</if>
+		<if test="content!=null and content!=''">
+		 	AND CONCAT_WS(',',oi.`name`) LIKE CONCAT('%',#{content},'%')
+		</if>
+		ORDER BY o.pay_time DESC
 	</select>
 	<select id="wyLjPayRecords" resultType="com.wuguan.huate.bean.vo.OrderRecord">
-		SELECT oi.order_no orderNo,oi.money,u.phone,oi.`desc`,o.is_pay isPay,o.pay_time payTime,o.house_no houseNo FROM ht_house h
-		LEFT JOIN ht_order_item oi ON h.id=oi.relation_id AND oi.fee_type_id=#{type}
+		SELECT oi.order_no orderNo,oi.money,u.phone,oi.`desc`,o.state isPay,o.pay_time payTime,o.house_no houseNo FROM ht_house h
+		LEFT JOIN ht_order_item oi ON h.id=oi.relation_id 
 		LEFT JOIN ht_order o ON oi.order_no=o.order_no
 		LEFT JOIN ht_user u ON u.id=oi.user_id
-		WHERE h.id=#{id}
+		WHERE h.id=#{id} AND oi.fee_type_id=#{type}
 		ORDER BY o.pay_time DESC
 	</select>
 	<select id="sdPayRecords" resultType="com.wuguan.huate.bean.vo.OrderRecord">
-		SELECT oi.order_no orderNo,oi.money,u.phone,oi.`desc`,o.is_pay isPay,o.pay_time payTime,o.house_no houseNo FROM ht_house_consume c
-		LEFT JOIN ht_order_item oi ON c.id=oi.relation_id AND oi.fee_type_id=#{type}
+		SELECT oi.order_no orderNo,oi.money,u.phone,oi.`desc`,o.state isPay,o.pay_time payTime,o.house_no houseNo FROM ht_house_consume c
+		LEFT JOIN ht_order_item oi ON c.id=oi.relation_id 
 		LEFT JOIN ht_order o ON oi.order_no=o.order_no
 		LEFT JOIN ht_user u ON u.id=oi.user_id
-		WHERE c.house_no=#{houseNo}
+		WHERE c.house_no=#{houseNo} AND oi.fee_type_id=#{type}
 		ORDER BY o.pay_time DESC
 	</select>
 	<select id="carPayRecords" resultType="com.wuguan.huate.bean.vo.OrderRecord">
-		SELECT oi.order_no orderNo,oi.money,u.phone,oi.`desc`,o.is_pay isPay,o.pay_time payTime,o.car_no carNo,o.park_no parkNo FROM ht_park p
-		LEFT JOIN ht_order_item oi ON oi.relation_id=p.id AND oi.fee_type_id=#{type}
+		SELECT oi.order_no orderNo,oi.money,u.phone,oi.`desc`,o.state isPay,o.pay_time payTime,o.car_no carNo,o.park_no parkNo FROM ht_park p
+		LEFT JOIN ht_order_item oi ON oi.relation_id=p.id 
 		LEFT JOIN ht_order o ON oi.order_no=o.order_no
 		LEFT JOIN ht_user u ON u.id=oi.user_id
 		<where>
@@ -164,6 +187,7 @@
 			<if test="houseNo!=null and houseNo!=''">
 				AND p.house_no=#{houseNo}
 			</if>
+			AND oi.fee_type_id=#{type}
 		</where>
 		ORDER BY o.pay_time DESC
 	</select>

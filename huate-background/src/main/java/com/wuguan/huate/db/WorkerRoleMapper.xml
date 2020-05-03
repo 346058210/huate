@@ -11,4 +11,7 @@
 			(#{workerId},#{roleId})
 		</foreach>
 	</insert>
+	<insert id="addData">
+		INSERT INTO ht_worker_role (worker_id,role_id) VALUES (#{workerId},#{roleId})
+	</insert>
 </mapper>

@@ -31,6 +31,7 @@ import com.wuguan.huate.comm.ThreadLocalManager;
 import com.wuguan.huate.db.HouseMapper;
 import com.wuguan.huate.db.UserHouseMapper;
 import com.wuguan.huate.service.HouseService;
+import com.wuguan.huate.service.ParkService;
 import com.wuguan.huate.service.ResidentService;
 import com.wuguan.huate.service.ShopService;
 import com.wuguan.huate.web.result.ResultEnums;
@@ -53,6 +54,8 @@ public class HouseServiceImpl implements HouseService {
 	ResidentService residentService;
 	@Autowired
 	ShopService shopService;
+	@Autowired
+	ParkService parkService;
 
 	/**
 	 * 批量新增（導入Excel報表）
@@ -124,7 +127,7 @@ public class HouseServiceImpl implements HouseService {
 		Page<House> page = houseMapper.shopPageData(param);
 		return new PageInfo<House>(page.getTotal(), page);
 	}
-	
+
 	@Override
 	public HouseVo detailData(Integer id) {
 		HouseVo vo = new HouseVo();
@@ -151,7 +154,7 @@ public class HouseServiceImpl implements HouseService {
 	@Override
 	public Boolean isExist(String houseNo, Integer id) {
 		Integer exist = houseMapper.isExist(houseNo, id);
-		if (exist!=null) {
+		if (exist != null) {
 			return true;
 		}
 		return false;
@@ -174,9 +177,9 @@ public class HouseServiceImpl implements HouseService {
 	@Override
 	public void delData(Integer id) {
 		House detailData = houseMapper.detailData(id);
-		Integer exist=userHouseMapper.isExist(id);
+		Integer exist = userHouseMapper.isExist(id);
 		List<Resident> list = residentService.getResidentsByHouseNo(detailData.getHouseNo());
-		if (exist!=null||list.size()>0) {
+		if (exist != null || list.size() > 0) {
 			throw new CustomException(ResultEnums.BUSINESS.getCode(), "此房号被绑定，请解绑后再操作");
 		}
 		detailData.setIsDel(1);
@@ -188,11 +191,19 @@ public class HouseServiceImpl implements HouseService {
 		ThreadLocalManager bean = SpringUtil.getBean(ThreadLocalManager.class);
 		UserVo user = JSONObject.parseObject(bean.getUser().toString(), UserVo.class);
 		House house = getHouseByHouseNo(houseNo);
-		Integer one=userHouseMapper.queryOne(user.getId(),house.getId());
-		if (one!=null) {
-			throw new CustomException(ResultEnums.BUSINESS.getCode(),"此房号已绑定");
+		Integer one = userHouseMapper.queryOne(user.getId(), house.getId());
+		if (one != null) {
+			throw new CustomException(ResultEnums.BUSINESS.getCode(), "此房号已绑定");
 		}
-		userHouseMapper.bindHouse(user.getId(),house.getId());
+		userHouseMapper.bindHouse(user.getId(), house.getId());
+		try {
+			House houseByHouseNo = houseMapper.getHouseByHouseNo(houseNo);
+			if (houseByHouseNo.getParkNo() != null && !"".equals(houseByHouseNo.getParkNo())) {
+				parkService.bindPark(houseByHouseNo.getParkNo());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -200,7 +211,7 @@ public class HouseServiceImpl implements HouseService {
 		ThreadLocalManager bean = SpringUtil.getBean(ThreadLocalManager.class);
 		UserVo user = JSONObject.parseObject(bean.getUser().toString(), UserVo.class);
 		House house = getHouseByHouseNo(houseNo);
-		userHouseMapper.unboundHouse(user.getId(),house.getId());
+		userHouseMapper.unboundHouse(user.getId(), house.getId());
 	}
 
 	@Override
@@ -221,8 +232,8 @@ public class HouseServiceImpl implements HouseService {
 	 */
 	@Override
 	public Boolean isBind(Integer houseId, Integer userId) {
-		Integer isBind=userHouseMapper.queryOne(userId, houseId);
-		if (isBind!=null) {
+		Integer isBind = userHouseMapper.queryOne(userId, houseId);
+		if (isBind != null) {
 			return true;
 		}
 		return false;

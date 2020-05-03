@@ -4,4 +4,16 @@
 	<insert id="publishNotification">
 		INSERT INTO ht_notification (publisher,content,publish_time) VALUES (#{publisher},#{content},#{publishTime})
 	</insert>
+	
+	<select id="queryNotifications" resultType="com.wuguan.huate.bean.entity.Notification">
+		SELECT 
+			id,publisher,content,publish_time publishTime,is_show isShow,title 
+		FROM ht_notification WHERE is_show=1
+		ORDER BY publish_time DESC
+	</select>
+	<select id="detailData" resultType="com.wuguan.huate.bean.entity.Notification">
+		SELECT 
+			id,publisher,content,publish_time publishTime,is_show isShow,title 
+		FROM ht_notification WHERE id=#{id}
+	</select>
 </mapper>

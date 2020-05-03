@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wuguan.huate.db.FeeNormMapper">
-	<insert id="addData">
+	<insert id="addData" keyProperty="id" useGeneratedKeys="true">
 		INSERT INTO ht_fee_norm
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<if test="typeName!=null and typeName!=''">
@@ -13,7 +13,7 @@
 			<if test="type!=null and type!=''">
 				type,
 			</if>
-			<if test="price!=null and price!=''">
+			<if test="price!=null">
 				price,
 			</if>
 			<if test="unit!=null and unit!=''">
@@ -42,7 +42,7 @@
 			<if test="type!=null and type!=''">
 				#{type},
 			</if>
-			<if test="price!=null and price!=''">
+			<if test="price!=null">
 				#{price},
 			</if>
 			<if test="unit!=null and unit!=''">
@@ -118,10 +118,10 @@
 				AND mtc=#{mtc}
 			</if>
 		</where>
-		ORDER BY id,pid,weight ASC
+		ORDER BY id DESC
 	</select>
 	<select id="isExist" resultType="java.lang.Integer">
-		SELECT 1 FROM ht_fee_norm
+		SELECT COUNT(1) FROM ht_fee_norm
 		<where>
 			<if test="typeName!=null and typeName!=''">
 				type_name=#{typeName}
@@ -133,7 +133,7 @@
 	</select>
 
 	<select id="isUse" resultType="java.lang.Integer">
-		SELECT 1 FROM (
+		SELECT COUNT(1) FROM (
 			SELECT water_type_id id FROM ht_house GROUP BY water_type_id
 			UNION ALL
 			SELECT electic_type_id id FROM ht_house GROUP BY electic_type_id

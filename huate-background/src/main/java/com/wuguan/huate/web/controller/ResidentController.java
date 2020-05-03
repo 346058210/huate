@@ -55,7 +55,7 @@ public class ResidentController {
 	@RequestMapping(value = "/resident/addData", method = RequestMethod.POST)
 	public ApiResult addData(Resident resident) throws CustomException {
 		residentService.addData(resident);
-		return ApiResult.success();
+		return ApiResult.success(resident.getId());
 	}
 
 	@Function(key = "residentUpdateData")
@@ -65,7 +65,7 @@ public class ResidentController {
 		residentService.updateData(resident);
 		return ApiResult.success();
 	}
-	
+
 	@Function(key = "residentDelData")
 	@ParamsValidate(validateParams = { @Param(key = "id", limit = "0,11", type = ParamType.NUMBER) })
 	@RequestMapping(value = "/resident/delData", method = RequestMethod.POST)
@@ -73,24 +73,30 @@ public class ResidentController {
 		residentService.delData(id);
 		return ApiResult.success();
 	}
-	
+
 	@Function(key = "residentImportExcel")
 	@RequestMapping(value = "/resident/importExcel", method = RequestMethod.POST)
 	public ApiResult importExcel(MultipartFile file) throws CustomException, IOException {
 		List<Resident> residents = new ArrayList<Resident>();
-		List<ErrorEntity> errorData = new ArrayList<ErrorEntity>();
+		List<Object> errorData = new ArrayList<Object>();
 		ExcelBoot.ImportBuilder(file.getInputStream(), ResidentParam.class)
 				.importExcel(new ImportFunction<ResidentParam>() {
 
 					@Override
 					public void onProcess(int sheetIndex, int rowIndex, ResidentParam entity) {
-						Resident resident = new Resident();
-						BeanUtils.copyProperties(entity, resident);
-						resident.setRelation(ResidentEnums.RelationEnum.getByName(entity.getRelationName()).getValue());
-						residents.add(resident);
-						if (residents.size() % 100 == 0) {
-							residentService.addBatch(residents);
-							residents.clear();
+						try {
+							Resident resident = new Resident();
+							BeanUtils.copyProperties(entity, resident);
+							resident.setRelation(
+									ResidentEnums.RelationEnum.getByName(entity.getRelationName()).getValue());
+							residents.add(resident);
+							if (residents.size() % 100 == 0) {
+								residentService.addBatch(residents);
+								residents.clear();
+							}
+						} catch (Exception e) {
+							errorData.add(entity);
+							e.printStackTrace();
 						}
 					}
 
@@ -99,7 +105,8 @@ public class ResidentController {
 						errorData.add(errorEntity);
 					}
 				});
-		residentService.addBatch(residents);
+		if (residents.size() != 0)
+			residentService.addBatch(residents);
 		return ApiResult.success(errorData);
 	}
 

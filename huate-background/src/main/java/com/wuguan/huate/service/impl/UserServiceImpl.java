@@ -75,12 +75,12 @@ public class UserServiceImpl implements UserService {
 	public void del(Integer id) throws CustomException{
 		Integer use = userHouseMapper.isUse(id);
 		Integer use2 = userParkMapper.isUse(id);
-		if (use!=null||use2!=null) {
+		if (use!=0||use2!=0) {
 			throw new CustomException(ResultEnums.BUSINESS.getCode(),"此用户存在绑定关系，暂无法删除");
 		}
 		User user = new User();
 		user.setId(id);
-		user.setIsDel(2);
+		user.setIsDel(1);
 		userMapper.updateData(user);
 	}
 	
@@ -90,7 +90,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Boolean isExist(String openid) throws CustomException{
 		Integer exist=userMapper.isExist(openid);
-		if (exist!=null) {
+		if (exist!=0) {
 			return true;
 		}
 		return false;
@@ -163,6 +163,11 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User getUserByOrderNo(String orderNo) {
 		return userMapper.getUserByOrderNo(orderNo);
+	}
+
+	@Override
+	public Integer todayRegisterNum() {
+		return userMapper.todayRegisterNum();
 	}
 
 }

@@ -102,8 +102,9 @@
 	<select id="isExist" resultType="java.lang.Integer">
 		SELECT 1 FROM ht_resident
 		<where>
+			is_del=0
 			<if test="idcard!=null and idcard!=''">
-				idcard=#{idcard}
+				AND	idcard=#{idcard}
 			</if>
 			<if test="id!=null and idcard!=''">
 				AND id!=#{id}

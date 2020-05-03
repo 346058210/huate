@@ -80,7 +80,7 @@ public class FeeNormServiceImpl implements FeeNormService {
 	@Override
 	public Boolean isExist(String typeName, Integer id) throws CustomException {
 		Integer exist = feeNormMapper.isExist(typeName, id);
-		if (exist!=null) {
+		if (exist!=0) {
 			return true;
 		}
 		return false;
@@ -89,7 +89,7 @@ public class FeeNormServiceImpl implements FeeNormService {
 	@Override
 	public Boolean isUse(Integer id) throws CustomException {
 		Integer use = feeNormMapper.isUse(id);
-		if (use!=null) {
+		if (use!=0) {
 			return true;
 		}
 		return false;

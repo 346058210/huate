@@ -21,5 +21,6 @@ public interface WorkerRoleService {
 	
 	void addBatch(Integer workerId,String roleIds)throws CustomException;
 	void del(Integer workerId)throws CustomException;
+	void addData(Integer workerId,Integer roleId)throws  CustomException;
 
 }

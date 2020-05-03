@@ -31,5 +31,8 @@ public class Notification implements Serializable {
 	private String publisher;
 	private String content;
 	private String publishTime;
+	private String title;
+	private Integer isShow;				//是否展示 1 是 0 否
+	private String wechatNotification;				//是否展示 1 是 0 否
 
 }

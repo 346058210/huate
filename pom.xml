@@ -8,6 +8,7 @@
   <modules>
     <module>huate-user</module>
     <module>huate-background</module>
+    <module>huate-manage</module>
   </modules>
   
   <properties>

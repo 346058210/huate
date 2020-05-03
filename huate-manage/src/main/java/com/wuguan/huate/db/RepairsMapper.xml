@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuguan.huate.db.RepairsMapper">
+	<insert id="addData" keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_repairs
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="reportId!=null and reportId!=''">
+				report_id,
+			</if>
+			<if test="reportType!=null and reportType!=''">
+				report_type,
+			</if>
+			<if test="uploadPath!=null and uploadPath!=''">
+				upload_path,
+			</if>
+			<if test="content!=null and content!=''">
+				content,
+			</if>
+			<if test="appointmentTime!=null and appointmentTime!=''">
+				appointment_time,
+			</if>
+			<if test="createTime!=null and createTime!=''">
+				create_time,
+			</if>
+			<if test="serveAddr!=null and serveAddr!=''">
+				serve_addr,
+			</if>
+			<if test="audit!=null and audit!=''">
+				audit,
+			</if>
+			<if test="auditPhone!=null and auditPhone!=''">
+				audit_phone,
+			</if>
+			<if test="auditId!=null and auditId!=''">
+				audit_id
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="reportId!=null and reportId!=''">
+				#{reportId},
+			</if>
+			<if test="reportType!=null and reportType!=''">
+				#{reportType},
+			</if>
+			<if test="uploadPath!=null and uploadPath!=''">
+				#{uploadPath},
+			</if>
+			<if test="content!=null and content!=''">
+				#{content},
+			</if>
+			<if test="appointmentTime!=null and appointmentTime!=''">
+				#{appointmentTime},
+			</if>
+			<if test="createTime!=null and createTime!=''">
+				#{createTime},
+			</if>
+			<if test="serveAddr!=null and serveAddr!=''">
+				#{serveAddr},
+			</if>
+			<if test="audit!=null and audit!=''">
+				#{audit},
+			</if>
+			<if test="auditPhone!=null and auditPhone!=''">
+				#{auditPhone},
+			</if>
+			<if test="auditId!=null and auditId!=''">
+				#{auditId}
+			</if>
+		</trim>
+	</insert>
+	<update id="allotHandle">
+		UPDATE ht_repairs
+		<set>
+			<if test="state!=null and state!=''">
+				state=#{state},
+			</if>
+			<if test="handlerId!=null and handlerId!=''">
+				handler_id=#{handlerId},
+			</if>
+			<if test="handler!=null and handler!=''">
+				handler=#{handler},
+			</if>
+			<if test="handlePhone!=null and handlePhone!=''">
+				handle_phone=#{handlePhone}
+			</if>
+		</set>
+		WHERE id=#{id}
+	</update>
+	<select id="detailData" resultType="com.wuguan.huate.bean.entity.Repairs">
+		SELECT 
+			id,report_id reportId,report_type reportType,upload_path uploadPath,appointment_time appointmentTime,state,`handler`,handler_id handlerId,
+			handle_phone handlePhone,create_time createTime,serve_addr serveAddr,audit,audit_phone auditPhone,audit_id auditId,content 
+		FROM ht_repairs WHERE id=#{id}
+	</select>
+	<select id="pageData" resultType="com.wuguan.huate.bean.entity.Repairs">
+		SELECT 
+			id,report_id reportId,report_type reportType,upload_path uploadPath,appointment_time appointmentTime,state,`handler`,handler_id handlerId,
+			handle_phone handlePhone,create_time createTime,serve_addr serveAddr,audit,audit_phone auditPhone,audit_id auditId,content 
+		FROM ht_repairs
+		<where>
+			1=1
+			<if test="param.state!=null and param.state!=''">
+				AND state=#{param.state}
+			</if>
+			<!-- <if test="workerId!=null and workerId!=''">
+				AND (report_id=#{workerId} OR handler_id=#{workerId} OR audit_id=#{workerId})
+			</if> -->
+		</where>
+		ORDER BY create_time DESC
+	</select>
+	<select id="queryDelayData" resultType="com.wuguan.huate.bean.entity.Repairs">
+		SELECT 
+			id,report_id reportId,report_type reportType,upload_path uploadPath,appointment_time appointmentTime,state,`handler`,handler_id handlerId,
+			handle_phone handlePhone,create_time createTime,serve_addr serveAddr,audit,audit_phone auditPhone,audit_id auditId,content 
+		FROM ht_repairs 
+		WHERE UNIX_TIMESTAMP(CONCAT(SUBSTRING_INDEX(appointment_time,' ',1),' ',SUBSTRING_INDEX(appointment_time,'-',-1)))-UNIX_TIMESTAMP(DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i'))>=0 
+		AND state=0
+	</select>
+</mapper>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuguan.huate.db.RoleMapper">
+	<select id="queryRoles" resultType="com.wuguan.huate.bean.entity.Role">
+		SELECT id,`desc`,role_name roleName,is_del isDel FROM ht_role WHERE is_del=0
+	</select>
+	<select id="queryByRoleId" resultType="com.wuguan.huate.bean.entity.Worker">
+		SELECT
+			w.id,w.`name`,w.phone,w.address,w.is_del isDel,w.create_time createTime,w.update_time updateTime,
+			w.sex,w.birth_date birthDate,w.nickname,w.openid,w.is_use isUse
+		FROM ht_worker_role wr
+		LEFT JOIN ht_worker w ON wr.worker_id=w.id
+		<where>
+			1=1
+			<if test="roleId!=null and roleId!=''">
+				AND wr.role_id=#{roleId}
+			</if>
+		</where>
+		AND w.is_del=0
+	</select>
+	<select id="getRoleByworkerId" resultType="com.wuguan.huate.bean.entity.Role">
+		SELECT r.id,r.`desc`,r.role_name roleName,r.is_del isDel FROM ht_role r
+		LEFT JOIN ht_worker_role wr ON r.id=wr.role_id
+		WHERE wr.worker_id=#{workerId} AND r.is_del=0
+	</select>
+</mapper>

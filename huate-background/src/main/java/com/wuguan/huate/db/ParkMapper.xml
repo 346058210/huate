@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wuguan.huate.db.ParkMapper">
-	<insert id="addBatch">
+	<insert id="addBatch" keyProperty="id" useGeneratedKeys="true">
 		INSERT INTO ht_park (house_no,car_no,park_no,owner_one,owner_two,phone_one,phone_two,type,due_time,norm_id,area,genre) VALUES
 		<foreach collection="parks" item="park" index="index" separator=",">
 			(#{park.houseNo},#{park.carNo},#{park.parkNo},#{park.ownerOne},#{park.ownerTwo},#{park.phoneOne},#{park.phoneTwo},
 			#{park.type},#{park.dueTime},#{park.normId},#{park.area},#{park.genre})
 		</foreach>
 	</insert>
-	<insert id="addData">
+	<insert id="addData" keyProperty="id" useGeneratedKeys="true">
 		INSERT INTO ht_park
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<if test="houseNo!=null and houseNo!=''">
@@ -162,7 +162,7 @@
 				AND CONCAT_WS(',',owner_one,owner_one,park_no,car_no) LIKE CONCAT('%',#{content},'%')
 			</if>
 		</where>
-		ORDER BY id DESC,due_time ASC
+		ORDER BY REPLACE(SUBSTRING_INDEX(park_no,'-',2),'-','') ASC,CONVERT(SUBSTRING_INDEX(park_no,'-',-1),SIGNED) ASC
 	</select>
 	<select id="getListParks" resultType="com.wuguan.huate.bean.entity.Park">
 		SELECT id,house_no houseNo,car_no carNo,park_no parkNo,owner_one ownerOne,owner_two ownerTwo,
@@ -208,7 +208,7 @@
 		FROM ht_park WHERE house_no=#{houseNo} AND is_del=0
 	</select>
 	<select id="isExist" resultType="java.lang.Integer">
-		SELECT 1 FROM ht_park
+		SELECT COUNT(1) FROM ht_park
 		<where>
 			is_del=0
 			<if test="parkNo!=null and parkNo!=''">

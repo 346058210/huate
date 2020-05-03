@@ -24,6 +24,6 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false)
 public class WorkerParam extends PageParams {
 	private String content;
-	private Integer job;
+	private Integer roleId;
 
 }

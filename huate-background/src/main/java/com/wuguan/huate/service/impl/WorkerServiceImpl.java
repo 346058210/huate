@@ -26,8 +26,10 @@ import com.wuguan.huate.bean.vo.WorkerVo;
 import com.wuguan.huate.comm.CustomException;
 import com.wuguan.huate.comm.PageInfo;
 import com.wuguan.huate.db.WorkerMapper;
+import com.wuguan.huate.service.WorkerRoleService;
 import com.wuguan.huate.service.WorkerService;
 import com.wuguan.huate.utils.MD5Utils;
+import com.wuguan.huate.utils.RedisHelper;
 import com.wuguan.huate.web.result.ResultEnums;
 
 /** 
@@ -42,6 +44,10 @@ import com.wuguan.huate.web.result.ResultEnums;
 public class WorkerServiceImpl implements WorkerService {
 	@Autowired
 	WorkerMapper workerMapper;
+	@Autowired
+	WorkerRoleService workerRoleService;
+	@Autowired
+	RedisHelper redisHelper;
 
 	@Override
 	public void addData(Worker worker) {
@@ -53,12 +59,15 @@ public class WorkerServiceImpl implements WorkerService {
 		worker.setCreateTime(sdf.format(new Date()));
 		worker.setPassword(MD5Utils.encodePassword(worker.getPassword(), MD5Utils.SALT));
 		workerMapper.addData(worker);
+		if (worker.getRoleId()!=null) {
+			workerRoleService.addData(worker.getId(), worker.getRoleId());
+		}
 	}
 
 	@Override
 	public Boolean isExist(String phone, Integer id) {
 		Integer exist=workerMapper.isExist(phone,id);
-		if (exist!=null) {
+		if (exist!=0) {
 			return true;
 		}
 		return false;
@@ -72,9 +81,17 @@ public class WorkerServiceImpl implements WorkerService {
 		}
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		worker.setUpdateTime(sdf.format(new Date()));
-		if (!worker.getPassword().equals("")) {
+		if (worker.getPassword()!=null&&!worker.getPassword().equals("")) {
 			worker.setPassword(MD5Utils.encodePassword(worker.getPassword(), MD5Utils.SALT));	
 		}
+		workerMapper.updateData(worker);
+		if (worker.getRoleId()!=null) {
+			workerRoleService.addData(worker.getId(), worker.getRoleId());
+		}
+	}
+	
+	@Override
+	public void updateToken(Worker worker) {
 		workerMapper.updateData(worker);
 	}
 
@@ -107,9 +124,12 @@ public class WorkerServiceImpl implements WorkerService {
 		PageHelper.startPage(param.getPage(),param.getRows());
 		Page<Worker> page=workerMapper.pageData(param);
 		List<WorkerVo> list = new ArrayList<WorkerVo>();
-		for (Worker worker : page) {
-			WorkerVo vo = new WorkerVo();
-			BeanUtils.copyProperties(worker, vo);
+		if (page.size()!=0) {
+			for (Worker worker : page) {
+				WorkerVo vo = new WorkerVo();
+				BeanUtils.copyProperties(worker, vo);
+				list.add(vo);
+			}
 		}
 		return new PageInfo<WorkerVo>(page.getTotal(), list);
 	}
@@ -117,6 +137,22 @@ public class WorkerServiceImpl implements WorkerService {
 	@Override
 	public Worker getWorkerByPhone(String phone) {
 		return workerMapper.getWorkerByPhone(phone);
+	}
+
+	@Override
+	public List<Worker> queryWorkersByRoleId(Integer roleId) {
+		return workerMapper.queryWorkersByRoleId(roleId);
+	}
+
+	@Override
+	public void offLineByWorkerId(Integer workerId) {
+		Worker worker = workerMapper.detailData(workerId);
+		if (worker.getTokenPc()!=null) {
+			Boolean key = redisHelper.existsKey(worker.getTokenPc());
+			if (key) {
+				redisHelper.expire(worker.getTokenPc(), 0);
+			}
+		}
 	}
 
 }

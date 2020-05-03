@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuguan.huate.db.WorkerMapper">
+	<select id="isExist" resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM ht_worker WHERE openid=#{openId} AND is_del=0
+	</select>
+	<select id="getByOpenid" resultType="com.wuguan.huate.bean.entity.Worker">
+		SELECT 
+			id,`name`,phone,address,is_del isDel,create_time createTime,update_time updateTime,sex,birth_date birthDate,nickname,
+			openid,`password`,is_use isUse,token_pc tokenPc,token_mobile tokenMobile
+		FROM ht_worker WHERE openid=#{openId} AND is_del=0
+	</select>
+	<select id="getByPhone" resultType="com.wuguan.huate.bean.entity.Worker">
+		SELECT 
+			id,`name`,phone,address,is_del isDel,create_time createTime,update_time updateTime,sex,birth_date birthDate,nickname,
+			openid,`password`,is_use isUse,token_pc tokenPc,token_mobile tokenMobile
+		FROM ht_worker WHERE phone=#{phone} AND is_del=0
+	</select>
+	<select id="detailData" resultType="com.wuguan.huate.bean.entity.Worker">
+		SELECT 
+			id,`name`,phone,address,is_del isDel,create_time createTime,update_time updateTime,sex,birth_date birthDate,nickname,
+			openid,`password`,is_use isUse,token_pc tokenPc,token_mobile tokenMobile
+		FROM ht_worker WHERE id=#{id} AND is_del=0
+	</select>
+	<update id="updateData">
+		UPDATE ht_worker
+		<set>
+			<if test="name!=null and name!=''">
+				`name`=#{name},
+			</if>
+			<if test="phone!=null and phone!=''">
+				phone=#{phone},
+			</if>
+			<if test="address!=null and address!=''">
+				address=#{address},
+			</if>
+			<if test="createTime!=null and createTime!=''">
+				create_time=#{createTime},
+			</if>
+			<if test="sex!=null and sex!=''">
+				sex=#{sex},
+			</if>
+			<if test="birthDate!=null and birthDate!=''">
+				birth_date=#{birthDate},
+			</if>
+			<if test="nickname!=null and nickname!=''">
+				nickname=#{nickname},
+			</if>
+			<if test="openid!=null and openid!=''">
+				openid=#{openid},
+			</if>
+			<if test="password!=null and password!=''">
+				`password`=#{password},
+			</if>
+			<if test="updateTime!=null and updateTime!=''">
+				update_time=#{updateTime},
+			</if>
+			<if test="isDel!=null and isDel!=''">
+				is_del=#{isDel},
+			</if>
+			<if test="isUse!=null and isUse!=''">
+				is_use=#{isUse},
+			</if>
+			<if test="tokenPc!=null and tokenPc!=''">
+				token_pc=#{tokenPc},
+			</if>
+			<if test="tokenMobile!=null and tokenMobile!=''">
+				token_mobile=#{tokenMobile}
+			</if>
+		</set>
+		<where>
+			1=1
+			<if test="id!=null and id!=''">
+				AND id=#{id}
+			</if>
+			<!-- <if test="openid!=null and openid!=''">
+				AND openid=#{openid}
+			</if> -->
+		</where>
+	</update>
+</mapper>

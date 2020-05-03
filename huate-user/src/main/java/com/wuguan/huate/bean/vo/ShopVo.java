@@ -38,6 +38,7 @@ public class ShopVo implements Serializable {
 	private Integer waterTypeId;     
 	private String dueTime; 
 	private String remarkName; 
+	private String rubbishDueTime;
 	
 	
 }

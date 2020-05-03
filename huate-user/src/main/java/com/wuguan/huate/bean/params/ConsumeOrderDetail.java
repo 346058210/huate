@@ -33,5 +33,7 @@ public class ConsumeOrderDetail implements Serializable{
 	private String month;
 	private Integer money;
 	private Integer type;
+	private Double startQuan;							//起始用量
+	private Double endQuan;							//结束用量
 
 }

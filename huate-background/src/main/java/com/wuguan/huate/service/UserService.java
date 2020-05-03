@@ -72,6 +72,12 @@ public interface UserService {
 	* @return
 	*/
 	User getUserByOrderNo(String orderNo);
+	/**
+	* @Title: todayRegisterNum
+	* @Description: TODO(这里用一句话描述这个方法的作用)
+	* @return
+	*/
+	Integer todayRegisterNum();
 
 
 }

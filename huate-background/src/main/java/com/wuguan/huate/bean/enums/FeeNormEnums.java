@@ -88,5 +88,41 @@ public class FeeNormEnums {
 			return null;
 		}
 	}
+	
+	public enum PayStateEnum{
+		YES(1, "成功"), NO(0, "失败");
+		
+		private Integer value;
+		private String name;
+		private PayStateEnum(Integer value, String name) {
+			this.value = value;
+			this.name = name;
+		}
+
+		public Integer getValue() {
+			return value;
+		}
+
+		public void setValue(Integer value) {
+			this.value = value;
+		}
+	
+		public String getName() {
+			return name;
+		}
+	
+		public void setName(String name) {
+			this.name = name;
+		}
+		
+		public static PayStateEnum getByValue(Integer value) {
+			for (PayStateEnum type : values()) {
+				if (value==type.getValue()) {
+					return type;
+				}
+			}
+			return null;
+		}
+	}
 
 }

@@ -73,7 +73,7 @@ public class ResourcesServiceImpl implements ResourcesService {
 	@Override
 	public Boolean isExist(String resName, Integer id) {
 		Integer exist = resourcesMapper.isExist(resName,id);
-		if (exist!=null) {
+		if (exist!=0) {
 			return true;
 		}
 		return false;

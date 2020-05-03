@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,6 +35,7 @@ import com.wuguan.huate.bean.enums.HouseEnums;
 import com.wuguan.huate.bean.params.HousePageParam;
 import com.wuguan.huate.bean.params.PageParams;
 import com.wuguan.huate.bean.params.ShopParam;
+import com.wuguan.huate.bean.params.ShopRe;
 import com.wuguan.huate.bean.vo.ShopVo;
 import com.wuguan.huate.comm.CustomException;
 import com.wuguan.huate.service.FeeNormService;
@@ -64,60 +66,67 @@ public class ShopController {
 		List<String> shopName = new ArrayList<String>();
 		List<House> houses = new ArrayList<House>();
 		List<Shop> shops = new ArrayList<Shop>();
-		List<ErrorEntity> errorData = new ArrayList<ErrorEntity>();
+		List<Object> errorData = new ArrayList<Object>();
 		ExcelBoot.ImportBuilder(file.getInputStream(), ShopParam.class).importExcel(new ImportFunction<ShopParam>() {
 			@Override
 			public void onProcess(int sheetIndex, int rowIndex, ShopParam entity) {
-				boolean contains = shopName.contains(entity.getShopName());
-				if (contains) {
-					for (House house : houses) {
-						if (house.getOwner().equals(entity.getShopName())) {
-							house.setArea(house.getArea() + entity.getShopArea());
-							house.setHouseNo(house.getHouseNo() + "|" + entity.getShopNo());
-						}
-					}
-				} else {
-					House house = new House();
-					house.setAddress(entity.getAddress());
-					house.setArea(entity.getShopArea());
-					house.setDueTime(entity.getDueTime());
-					house.setHouseNo(entity.getShopNo());
-					house.setOwner(entity.getShopName());
-					house.setDueTime(entity.getDueTime().equals("")?null:entity.getDueTime());
-					house.setRemarkName(entity.getRemarkName());
-					house.setType(HouseEnums.TypeEnum.BUSINESS.getValue());
-					house.setSale(HouseEnums.SaleEnum.getByName(entity.getSale()).getValue());
-					for (FeeNorm norm : norms) {
-						if (entity.getWaterType().equals(norm.getTypeName())) {// 水费收费标准
-							house.setWaterTypeId(norm.getId());
-						} else if (entity.getElecticType().equals(norm.getTypeName())) {// 电费收费标准
-							house.setElecticTypeId(norm.getId());
-						} else if (entity.getRubbishType().equals(norm.getTypeName())) {// 生活垃圾费标准
-							house.setRubbishTypeId(norm.getId());
-						} else if (entity.getPropertyType().equals(norm.getTypeName())) {// 物业费标准
-							house.setPropertyTypeId(norm.getId());
-						}
-					}
-					houses.add(house);
-				}
-				Shop shop = new Shop();
-				shop.setShopArea(entity.getShopArea());
-				shop.setShopNo(entity.getShopNo());
-				shops.add(shop);
-				if (houses.size() % 100 == 0) {
-					houseService.addBatch(houses);
-					for (House house : houses) {
-						for (Shop sp : shops) {
-							if (house.getHouseNo().contains(sp.getShopNo())) {
-								sp.setHouseId(house.getId());
+				try {
+					boolean contains = shopName.contains(entity.getShopName());
+					if (contains) {
+						for (House house : houses) {
+							if (house.getOwner().equals(entity.getShopName())) {
+								house.setArea(house.getArea() + entity.getShopArea());
+								house.setHouseNo(house.getHouseNo() + "|" + entity.getShopNo());
 							}
 						}
+					} else {
+						shopName.add(entity.getShopName());
+						House house = new House();
+						house.setAddress(entity.getAddress());
+						house.setArea(entity.getShopArea());
+						house.setDueTime(entity.getDueTime());
+						house.setHouseNo(entity.getShopNo());
+						house.setOwner(entity.getShopName());
+						house.setDueTime(entity.getDueTime().equals("")?null:entity.getDueTime());
+						house.setRemarkName(entity.getRemarkName());
+						house.setType(HouseEnums.TypeEnum.BUSINESS.getValue());
+						house.setSale(HouseEnums.SaleEnum.getByName(entity.getSale()).getValue());
+						for (FeeNorm norm : norms) {
+							if (entity.getWaterType().equals(norm.getTypeName())) {// 水费收费标准
+								house.setWaterTypeId(norm.getId());
+							} else if (entity.getElecticType().equals(norm.getTypeName())) {// 电费收费标准
+								house.setElecticTypeId(norm.getId());
+							} else if (entity.getRubbishType().equals(norm.getTypeName())) {// 生活垃圾费标准
+								house.setRubbishTypeId(norm.getId());
+							} else if (entity.getPropertyType().equals(norm.getTypeName())) {// 物业费标准
+								house.setPropertyTypeId(norm.getId());
+							}
+						}
+						houses.add(house);
 					}
-					shopService.addBatch(shops);
-					houses.clear();
-					shops.clear();
-					shopName.clear();
+					Shop shop = new Shop();
+					shop.setShopArea(entity.getShopArea());
+					shop.setShopNo(entity.getShopNo());
+					shops.add(shop);
+					if (houses.size() % 100 == 0) {
+						houseService.addBatch(houses);
+						for (House house : houses) {
+							for (Shop sp : shops) {
+								if (house.getHouseNo().contains(sp.getShopNo())) {
+									sp.setHouseId(house.getId());
+								}
+							}
+						}
+						shopService.addBatch(shops);
+						houses.clear();
+						shops.clear();
+						shopName.clear();
+					}
+				} catch (Exception e) {
+					errorData.add(entity);
+					e.printStackTrace();
 				}
+			
 			}
 
 			@Override
@@ -126,15 +135,17 @@ public class ShopController {
 
 			}
 		});
-		houseService.addBatch(houses);
-		for (House house : houses) {
-			for (Shop sp : shops) {
-				if (house.getHouseNo().contains(sp.getShopNo())) {
-					sp.setHouseId(house.getId());
+		if (houses.size()!=0)
+			houseService.addBatch(houses);
+			for (House house : houses) {
+				for (Shop sp : shops) {
+					if (house.getHouseNo().contains(sp.getShopNo())) {
+						sp.setHouseId(house.getId());
+					}
 				}
 			}
-		}
-		shopService.addBatch(shops);
+		if (shops.size()!=0)
+			shopService.addBatch(shops);
 		return ApiResult.success(errorData);
 	}
 	
@@ -184,5 +195,78 @@ public class ShopController {
 	public ApiResult pageData(HousePageParam param) throws CustomException {
 		return ApiResult.success(houseService.shopPageData(param));
 	}
+	
+	@Function(key = "shopAddData")
+	@RequestMapping(value = "/shop/addData", method = RequestMethod.POST)
+	public ApiResult addData(@RequestBody ShopRe re) throws CustomException {
+		shopService.addData(re);
+		return ApiResult.success(re.getId());
+	}
 
+	@Function(key = "shopUpdateData")
+	@RequestMapping(value = "/shop/updateData", method = RequestMethod.POST)
+	public ApiResult updateData(@RequestBody ShopRe re) throws CustomException {
+		shopService.updateData(re);
+		return ApiResult.success();
+	}
+	
+	@Function(key = "shopDetailData")
+	@RequestMapping(value = "/shop/detailData", method = RequestMethod.GET) 
+	public ApiResult detailData(Integer id) throws CustomException {
+		return ApiResult.success(shopService.detailData(id));
+	}
+	
+	@Function(key = "shopDelData")
+	@RequestMapping(value = "/shop/delData", method = RequestMethod.POST)
+	public ApiResult delData(Integer id) throws CustomException {
+		shopService.delData(id);
+		return ApiResult.success();
+	}
+	
+	/**
+	 * 
+	* @Title: queryAllStore
+	* @Description: 获取所有的店面
+	* @return
+	* @throws CustomException
+	 */
+	@Function(key = "shopQueryAllStore")
+	@RequestMapping(value = "/shop/queryAllStore", method = RequestMethod.GET)
+	public ApiResult queryAllStore(String shopNo)throws CustomException{
+		return ApiResult.success(shopService.queryAllStore(shopNo));
+		
+	}
+	
+	@Function(key = "shopAddStore")
+	@RequestMapping(value = "/shop/addStore", method = RequestMethod.POST)
+	public ApiResult addStore(Shop shop)throws CustomException{
+		shopService.addStore(shop);
+		return ApiResult.success(shop.getId());
+	}
+	
+	@Function(key = "shopUpdateStore")
+	@RequestMapping(value = "/shop/updateStore", method = RequestMethod.POST)
+	public ApiResult updateStore(Shop shop)throws CustomException{
+		shopService.updateStore(shop);
+		return ApiResult.success();
+	}
+	
+	@Function(key = "shopDelStore")
+	@RequestMapping(value = "/shop/delStore", method = RequestMethod.POST)
+	public ApiResult delStore(Integer id)throws CustomException{
+		shopService.delStore(id);
+		return ApiResult.success();
+	}
+	
+	@Function(key = "shopDetailStore")
+	@RequestMapping(value = "/shop/detailStore", method = RequestMethod.GET)
+	public ApiResult detailStore(Integer id)throws CustomException{
+		return ApiResult.success(shopService.detailStore(id));
+	}
+	
+	@Function(key = "shopPageStore")
+	@RequestMapping(value = "/shop/pageStore", method = RequestMethod.GET)
+	public ApiResult pageStore(PageParams params)throws CustomException{
+		return ApiResult.success(shopService.pageStore(params));
+	}
 }

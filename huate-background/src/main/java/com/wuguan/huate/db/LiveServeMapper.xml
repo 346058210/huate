@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuguan.huate.db.LiveServeMapper">
+	<insert id="addData" keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_live_serve
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="name!=null and name!=''">
+				`name`,
+			</if>
+			<if test="desc!=null and desc!=''">
+				`desc`,
+			</if>
+			<if test="uploadPath!=null and uploadPath!=''">
+				upload_path,
+			</if>
+			<if test="explain!=null and explain!=''">
+				`explain`,
+			</if>
+			<if test="audit!=null and audit!=''">
+				audit,
+			</if>
+			<if test="auditPhone!=null and auditPhone!=''">
+				audit_phone,
+			</if>
+			<if test="auditId!=null and auditId!=''">
+				audit_id,
+			</if>
+			<if test="serveTime!=null and serveTime!=''">
+				serve_time
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="name!=null and name!=''">
+				#{name},
+			</if>
+			<if test="desc!=null and desc!=''">
+				#{desc},
+			</if>
+			<if test="uploadPath!=null and uploadPath!=''">
+				#{uploadPath},
+			</if>
+			<if test="explain!=null and explain!=''">
+				#{explain},
+			</if>
+			<if test="audit!=null and audit!=''">
+				#{audit},
+			</if>
+			<if test="auditPhone!=null and auditPhone!=''">
+				#{auditPhone},
+			</if>
+			<if test="auditId!=null and auditId!=''">
+				#{auditId},
+			</if>
+			<if test="serveTime!=null and serveTime!=''">
+				#{serveTime}
+			</if>
+		</trim>
+	</insert>
+	<update id="updateData">
+		UPDATE ht_live_serve
+		<set>
+			<if test="name!=null and name!=''">
+				`name`=#{name},
+			</if>
+			<if test="desc!=null and desc!=''">
+				`desc`=#{desc},
+			</if>
+			<if test="uploadPath!=null">
+				upload_path=#{uploadPath},
+			</if>
+			<if test="explain!=null and explain!=''">
+				`explain`=#{explain},
+			</if>
+			<if test="isDel!=null and isDel!=''">
+				is_del=#{isDel},
+			</if>
+			<if test="audit!=null and audit!=''">
+				audit=#{audit},
+			</if>
+			<if test="auditPhone!=null and auditPhone!=''">
+				audit_phone=#{auditPhone},
+			</if>
+			<if test="auditId!=null and auditId!=''">
+				audit_id=#{auditId},
+			</if>
+			<if test="serveTime!=null and serveTime!=''">
+				serve_time=#{serveTime}
+			</if>
+		</set>
+		WHERE id=#{id}
+	</update>
+	<select id="isUse" resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM ht_appoint_record WHERE live_id=#{id}
+	</select>
+	<select id="isExist" resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM ht_live_serve
+		<where>
+			1=1
+			AND is_del=0
+			<if test="name!=null and name!=''">
+				AND name=#{name}
+			</if>
+			<if test="id!=null and id!=''">
+				AND id!=#{id}
+			</if>
+		</where>
+	</select>
+	<select id="detailData" resultType="com.wuguan.huate.bean.entity.LiveServe">
+		SELECT id,`name`,`desc`,upload_path uploadPath,`explain`,is_del isDel,audit,audit_phone auditPhone,audit_id auditId,serve_time serveTime FROM ht_live_serve WHERE id=#{id}
+	</select>
+	<select id="pageData" resultType="com.wuguan.huate.bean.entity.LiveServe">
+		SELECT id,`name`,`desc`,upload_path uploadPath,`explain`,is_del isDel,audit,audit_phone auditPhone,audit_id auditId,serve_time serveTime FROM ht_live_serve
+		<where>
+			is_del=0
+			<if test="content!=null and content!=''">
+				AND	CONCAT_WS(',',`name`,phone) LIKE CONCAT('%',#{content},'%')
+			</if>
+		</where>
+		ORDER BY id DESC
+	</select>
+</mapper>

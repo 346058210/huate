@@ -36,13 +36,24 @@ public class WorkerRoleServiceImpl implements WorkerRoleService {
 		if (roleIds.trim()==null||"".equals(roleIds.trim())) {
 			throw new CustomException(ResultEnums.BUSINESS.getCode(),"roleIds字段不能为null或者空字符");
 		}
-		String[] roles = roleIds.split(",");
+		String[] roles = null;
+		if (roleIds.contains(",")) {
+			roles = roleIds.split(",");
+		}else {
+			roles= new String[]{roleIds};
+		}
 		workerRoleMapper.addBatch(workerId,roles);
 	}
 
 	@Override
 	public void del(Integer workerId)throws CustomException {
 		workerRoleMapper.del(workerId);
+	}
+
+	@Override
+	public void addData(Integer workerId, Integer roleId) throws CustomException {
+		workerRoleMapper.del(workerId);
+		workerRoleMapper.addData(workerId,roleId);
 	}
 
 }

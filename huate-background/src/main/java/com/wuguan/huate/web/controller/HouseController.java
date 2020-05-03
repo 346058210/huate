@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -82,32 +83,38 @@ public class HouseController {
 	public ApiResult importExcel(MultipartFile file) throws IOException {
 		List<FeeNorm> norms = feeNormService.getFeeNorms();
 		List<House> houses = new ArrayList<House>();
-		List<ErrorEntity> errorData = new ArrayList<ErrorEntity>();
+		List<Object> errorData = new ArrayList<Object>();
 		ExcelBoot.ImportBuilder(file.getInputStream(), HouseParam.class).importExcel(new ImportFunction<HouseParam>() {
 			@Override
 			public void onProcess(int sheetIndex, int rowIndex, HouseParam entity) {
-				House house = new House();
-				BeanUtils.copyProperties(entity, house);
-				house.setState(HouseEnums.StateEnums.getByName(entity.getStateName()).getValue());
-				house.setType(HouseEnums.TypeEnum.getByName(entity.getTypeName()).getValue());
-				house.setSale(HouseEnums.SaleEnum.getByName(entity.getSale()).getValue());
-				house.setDueTime(entity.getDueTime().equals("") ? null : entity.getDueTime());
-				for (FeeNorm norm : norms) {
-					if (entity.getWaterType().equals(norm.getTypeName())) {// 水费收费标准
-						house.setWaterTypeId(norm.getId());
-					} else if (entity.getElecticType().equals(norm.getTypeName())) {// 电费收费标准
-						house.setElecticTypeId(norm.getId());
-					} else if (entity.getRubbishType().equals(norm.getTypeName())) {// 生活垃圾费标准
-						house.setRubbishTypeId(norm.getId());
-					} else if (entity.getPropertyType().equals(norm.getTypeName())) {// 物业费标准
-						house.setPropertyTypeId(norm.getId());
+				try {
+					House house = new House();
+					BeanUtils.copyProperties(entity, house);
+					house.setState(HouseEnums.StateEnums.getByName(entity.getStateName()).getValue());
+					house.setType(HouseEnums.TypeEnum.getByName(entity.getTypeName()).getValue());
+					house.setSale(HouseEnums.SaleEnum.getByName(entity.getSale()).getValue());
+					house.setDueTime(entity.getDueTime().equals("") ? null : entity.getDueTime());
+					for (FeeNorm norm : norms) {
+						if (entity.getWaterType().equals(norm.getTypeName())) {// 水费收费标准
+							house.setWaterTypeId(norm.getId());
+						} else if (entity.getElecticType().equals(norm.getTypeName())) {// 电费收费标准
+							house.setElecticTypeId(norm.getId());
+						} else if (entity.getRubbishType().equals(norm.getTypeName())) {// 生活垃圾费标准
+							house.setRubbishTypeId(norm.getId());
+						} else if (entity.getPropertyType().equals(norm.getTypeName())) {// 物业费标准
+							house.setPropertyTypeId(norm.getId());
+						}
 					}
+					houses.add(house);
+					if (houses.size() % 100 == 0) {
+						houseService.addBatch(houses);
+						houses.clear();
+					}
+				} catch (Exception e) {
+					errorData.add(entity);
+					e.printStackTrace();
 				}
-				houses.add(house);
-				if (houses.size() % 100 == 0) {
-					houseService.addBatch(houses);
-					houses.clear();
-				}
+				
 			}
 
 			@Override
@@ -116,7 +123,8 @@ public class HouseController {
 
 			}
 		});
-		houseService.addBatch(houses);
+		if (houses.size()!=0)
+			houseService.addBatch(houses);
 		return ApiResult.success(errorData);
 	}
 
@@ -310,16 +318,16 @@ public class HouseController {
 	 * @throws CustomException
 	 */
 	@Function(key = "houseAddData")
-	@ParamsValidate(validateParams = { @Param(key = "houseNo", type = ParamType.CUSTOM),
-			@Param(key = "area", type = ParamType.CUSTOM), @Param(key = "type", type = ParamType.CUSTOM),
-			@Param(key = "waterTypeId", type = ParamType.CUSTOM), @Param(key = "dueTime", type = ParamType.CUSTOM),
-			@Param(key = "electicTypeId", type = ParamType.CUSTOM),
-			@Param(key = "rubbishTypeId", type = ParamType.CUSTOM),
-			@Param(key = "propertyTypeId", type = ParamType.CUSTOM) })
+	//@ParamsValidate(validateParams = { @Param(key = "houseNo", type = ParamType.CUSTOM),
+	//		@Param(key = "area", type = ParamType.CUSTOM), @Param(key = "type", type = ParamType.CUSTOM),
+	//		@Param(key = "waterTypeId", type = ParamType.CUSTOM), @Param(key = "dueTime", type = ParamType.CUSTOM),
+	//		@Param(key = "electicTypeId", type = ParamType.CUSTOM),
+	//		@Param(key = "rubbishTypeId", type = ParamType.CUSTOM),
+	//		@Param(key = "propertyTypeId", type = ParamType.CUSTOM) })
 	@RequestMapping(value = "/house/addData", method = RequestMethod.POST)
-	public ApiResult addData(HouseVo param) throws CustomException {
+	public ApiResult addData(@RequestBody HouseVo param) throws CustomException {
 		houseService.addData(param);
-		return ApiResult.success();
+		return ApiResult.success(param.getId());
 	}
 
 	/**
@@ -331,9 +339,9 @@ public class HouseController {
 	 * @throws CustomException
 	 */
 	@Function(key = "houseUpdateData")
-	@ParamsValidate(validateParams = { @Param(key = "id",limit = "0,11", type = ParamType.NUMBER)})
+	//@ParamsValidate(validateParams = { @Param(key = "id", limit = "0,11", type = ParamType.NUMBER) })
 	@RequestMapping(value = "/house/updateData", method = RequestMethod.POST)
-	public ApiResult updateData(HouseVo param) throws CustomException {
+	public ApiResult updateData(@RequestBody HouseVo param) throws CustomException {
 		houseService.updateData(param);
 		return ApiResult.success();
 	}
@@ -347,7 +355,7 @@ public class HouseController {
 	 * @throws CustomException
 	 */
 	@Function(key = "houseDelData")
-	@ParamsValidate(validateParams = { @Param(key = "id",limit = "0,11", type = ParamType.NUMBER)})
+	@ParamsValidate(validateParams = { @Param(key = "id", limit = "0,11", type = ParamType.NUMBER) })
 	@RequestMapping(value = "/house/delData", method = RequestMethod.POST)
 	public ApiResult delData(Integer id) throws CustomException {
 		houseService.delData(id);
@@ -362,7 +370,7 @@ public class HouseController {
 	 * @return
 	 * @throws CustomException
 	 */
-	@ParamsValidate(validateParams = { @Param(key = "houseNo",type = ParamType.CUSTOM)})
+	@ParamsValidate(validateParams = { @Param(key = "houseNo", type = ParamType.CUSTOM) })
 	@RequestMapping(value = "/house/bindHouse", method = RequestMethod.POST)
 	public ApiResult bindHouse(String houseNo) throws CustomException {
 		houseService.bindHouse(houseNo);
@@ -377,7 +385,7 @@ public class HouseController {
 	 * @return
 	 * @throws CustomException
 	 */
-	@ParamsValidate(validateParams = { @Param(key = "houseNo",type = ParamType.CUSTOM)})
+	@ParamsValidate(validateParams = { @Param(key = "houseNo", type = ParamType.CUSTOM) })
 	@RequestMapping(value = "/house/unboundHouse", method = RequestMethod.POST)
 	public ApiResult unboundHouse(String houseNo) throws CustomException {
 		houseService.unboundHouse(houseNo);
@@ -392,7 +400,7 @@ public class HouseController {
 	 * @return
 	 * @throws CustomException
 	 */
-	@ParamsValidate(validateParams = { @Param(key = "name",type = ParamType.CUSTOM)})
+	@ParamsValidate(validateParams = { @Param(key = "name", type = ParamType.CUSTOM) })
 	@RequestMapping(value = "/house/queryShop", method = RequestMethod.POST)
 	public ApiResult queryShop(String name) throws CustomException {
 		return ApiResult.success(houseService.queryShop(name));

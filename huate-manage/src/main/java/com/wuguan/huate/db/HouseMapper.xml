@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuguan.huate.db.HouseMapper">
+
+	<resultMap type="com.wuguan.huate.bean.vo.HouseVo" id="HouseVo">
+		<id property="id" column="id"/>
+		<result property="houseNo" column="house_no" />
+		<result property="building" column="building" />
+		<result property="unit" column="unit" />
+		<result property="room" column="room"/>
+		<result property="area" column="area"/>
+		<result property="address" column="address"/>
+		<result property="remarkName" column="remark_name"/>
+		<result property="type" column="type"/>
+		<result property="state" column="state"/>
+		<result property="waterTypeId" column="water_type_id"/>
+		<result property="dueTime" column="due_time"/>
+		<result property="sale" column="sale"/>
+		<result property="electicTypeId" column="electic_type_id"/>
+		<result property="rubbishTypeId" column="rubbish_type_id"/>
+		<result property="propertyTypeId" column="property_type_id"/>
+		<result property="parkNo" column="park_no"/>
+		<result property="owner" column="owner"/>
+		<result property="noticeTime" column="notice_time"/>
+		<result property="rubbishDueTime" column="rubbish_due_time"/>
+		<collection property="residents" ofType="com.wuguan.huate.bean.entity.Resident">
+			<id property="id" column="residentId"/>
+			<result property="name" column="name" />
+			<result property="birthDate" column="birth_date" />
+			<result property="sex" column="sex" />
+			<result property="houseNo" column="houseNo"/>
+			<result property="phone" column="phone"/>
+			<result property="moveinTime" column="movein_time"/>
+			<result property="relation" column="relation"/>
+			<result property="idcard" column="idcard"/>
+		</collection>
+	</resultMap>
+
+	<select id="detailData" resultMap="HouseVo">
+		SELECT
+			h.id,h.house_no,h.building,h.unit,h.room,h.area,h.address,h.remark_name,h.type,h.state,h.water_type_id,h.due_time,
+			h.sale,h.electic_type_id,h.rubbish_type_id,h.property_type_id,h.park_no,h.`owner`,h.notice_time,h.rubbish_due_time,
+			r.id residentId,r.`name`,r.birth_date,r.sex,r.house_no houseNo,r.phone,r.movein_time,r.relation,r.idcard
+		FROM ht_house h
+		LEFT JOIN ht_resident r ON h.house_no=r.house_no
+		WHERE h.id=#{id}
+	</select>
+	<select id="getBuildings" resultType="java.lang.Integer">
+		SELECT building FROM ht_house GROUP BY building ORDER BY building ASC
+	</select>
+	<select id="getUnitsByBuilding" resultType="java.lang.Integer">
+		SELECT unit FROM ht_house WHERE building=#{building} GROUP BY unit ORDER BY unit ASC
+	</select>
+	<select id="getHouseByHouseNo" resultType="com.wuguan.huate.bean.entity.House">
+		SELECT id,house_no houseNo,remark_name remarkName,area,address,type,building,unit,room,state,
+		due_time dueTime,water_type_id waterTypeId,sale,electic_type_id electicTypeId,rubbish_type_id rubbishTypeId,
+		property_type_id propertyTypeId,park_no parkNo,`owner`,rubbish_due_time rubbishDueTime FROM ht_house WHERE house_no=#{houseNo} AND is_del=0
+	</select>
+	<select id="queryShop" resultType="com.wuguan.huate.bean.entity.House">
+		SELECT
+			id,house_no houseNo,remark_name remarkName,area,address,type,building,unit,room,state,due_time dueTime,water_type_id waterTypeId,sale,
+			electic_type_id electicTypeId,rubbish_type_id rubbishTypeId,property_type_id propertyTypeId,park_no parkNo,`owner`,rubbish_due_time rubbishDueTime
+		FROM ht_house WHERE `owner`	LIKE CONCAT('%',#{name},'%') AND is_del=0
+	</select>
+</mapper>

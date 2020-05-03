@@ -2,7 +2,7 @@
 <!DOCTYPE xml>
 <configuration>
 	<!--Linux日志路径配置  -->
-	<property name="log.home.path"  value="/logs/huate/background"/>
+	<property name="log.home.path"  value="/huate/logs/background"/>
 	<!--windows日志配置  -->
 	<!-- <property name="log.home.path"  value="D:/logs/huate/background"/> -->
 	<property name="consolePath" value="${log.home.path}/console" />

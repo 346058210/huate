@@ -9,9 +9,11 @@
 package com.wuguan.huate.db;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.github.pagehelper.Page;
 import com.wuguan.huate.bean.entity.HouseConsume;
 import com.wuguan.huate.bean.params.HouseConsumePageParam;
 
@@ -60,4 +62,26 @@ public interface HouseConsumeMapper {
 	* @return
 	*/
 	List<HouseConsume> getListDataUnPay(@Param("houseNo")String houseNo);
+
+	/**
+	* @Title: waterEelecticFeeCount
+	* @Description: 12月水电费统计
+	* @return
+	*/
+	List<Map<String, Object>> waterEelecticFeeCount();
+
+	/**
+	* @Title: pageData
+	* @Description: TODO(这里用一句话描述这个方法的作用)
+	* @param consumePageParam
+	* @return
+	*/
+	Page<HouseConsume> pageData(HouseConsumePageParam consumePageParam);
+
+	/**
+	* @Title: querySameMonthData
+	* @Description: TODO(这里用一句话描述这个方法的作用)
+	* @return
+	*/
+	List<HouseConsume> querySameMonthData();
 }

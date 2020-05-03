@@ -45,16 +45,16 @@ public class ResidentParam implements Serializable {
 	@ImportField(required = true)
 	private String houseNo;                         //戶號
 	@ExportField(columnName = "电话")
-	@ImportField(required = true)
+	@ImportField()
 	private String phone;                           //手機
 	@ExportField(columnName = "入住时间")
 	@ImportField()
 	private String moveinTime;                      //入住時間
 	@ExportField(columnName = "关系（业主|成员|租客）")
-	@ImportField(required = true)
+	@ImportField()
 	private String relationName;                       //關係 1 戶主 2 成員 3 租戶
 	@ExportField(columnName = "身份证号")
-	@ImportField(required = true)
+	@ImportField()
 	private String idcard;                       //身份證號碼
 
 }

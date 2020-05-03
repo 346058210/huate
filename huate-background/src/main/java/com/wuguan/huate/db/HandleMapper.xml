@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuguan.huate.db.HandleMapper">
+	<select id="queryByRepairsId" resultType="com.wuguan.huate.bean.entity.Handle">
+		SELECT
+			id,handle_result handleResult,create_time createTime,repairs_id repairsId,handle_path handlePath,is_del isDel
+		FROM ht_handle WHERE repairs_id=#{repairsId} AND is_del=0
+		ORDER BY create_time DESC
+	</select>
+</mapper>

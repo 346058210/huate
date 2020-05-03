@@ -17,5 +17,6 @@
 			h.due_time dueTime,h.remark_name remarkName
 		FROM ht_shop p
 		LEFT JOIN ht_house h ON p.house_id=h.id
+		WHERE h.is_del=0 and p.is_del=0
 	</select>
 </mapper>

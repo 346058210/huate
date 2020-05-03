@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuguan.huate.db.AdvertisingMapper">
+	<insert id="addData" keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_advertising
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="title!=null and title!=''">
+				title,
+			</if>
+			<if test="path!=null and path!=''">
+				path,
+			</if>
+			<if test="isPub!=null and isPub!=''">
+				is_pub,
+			</if>
+			<if test="createTime!=null and createTime!=''">
+				create_time,
+			</if>
+			<if test="sequence!=null and sequence!=''">
+				sequence,
+			</if>
+			<if test="url!=null and url!=''">
+				url,
+			</if>
+			<if test="urlType!=null and urlType!=''">
+				url_type,
+			</if>
+			<if test="otherAppId!=null and otherAppId!=''">
+				other_app_id
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="title!=null and title!=''">
+				#{title},
+			</if>
+			<if test="path!=null and path!=''">
+				#{path},
+			</if>
+			<if test="isPub!=null and isPub!=''">
+				#{isPub},
+			</if>
+			<if test="createTime!=null and createTime!=''">
+				#{createTime},
+			</if>
+			<if test="sequence!=null and sequence!=''">
+				#{sequence},
+			</if>
+			<if test="url!=null and url!=''">
+				#{url},
+			</if>
+			<if test="urlType!=null and urlType!=''">
+				#{urlType},
+			</if>
+			<if test="otherAppId!=null and otherAppId!=''">
+				#{otherAppId}
+			</if>
+		</trim>
+	</insert>
+	<update id="updateData">
+		UPDATE ht_advertising
+		<set>
+			<if test="title!=null and title!=''">
+				title=#{title},
+			</if>
+			<if test="path!=null">
+				path=#{path},
+			</if>
+			<if test="createTime!=null and createTime!=''">
+				create_time=#{createTime},
+			</if>
+			<if test="sequence!=null and sequence!=''">
+				sequence=#{sequence},
+			</if>
+			<if test="isDel!=null and isDel!=''">
+				is_del=#{isDel},
+			</if>
+			<if test="isPub!=null and isPub!=''">
+				is_pub=#{isPub},
+			</if>
+			<if test="url!=null and url!=''">
+				url=#{url},
+			</if>
+			<if test="urlType!=null and urlType!=''">
+				url_type=#{urlType},
+			</if>
+			<if test="otherAppId!=null and otherAppId!=''">
+				other_app_id=#{otherAppId}
+			</if>
+		</set>
+		WHERE id=#{id}
+	</update>
+	<select id="detailData" resultType="com.wuguan.huate.bean.entity.Advertising">
+		SELECT id,title,path,create_time createTime,is_del isDel,is_pub isPub,sequence,url,url_type urlType,other_app_id otherAppId FROM ht_advertising WHERE id=#{id}
+	</select>
+	<select id="pageData" resultType="com.wuguan.huate.bean.entity.Advertising">
+		SELECT id,title,path,create_time createTime,is_del isDel,is_pub isPub,sequence,url,url_type urlType,other_app_id otherAppId FROM ht_advertising
+		<where>
+			is_del=0
+			<if test="title!=null and title!=''">
+				AND	title LIKE CONCAT('%',#{title},'%')
+			</if>
+			<if test="isPub!=null and isPub!=''">
+				AND	is_pub=#{isPub}
+			</if>
+		</where>
+		ORDER BY sequence ASC
+	</select>
+</mapper>

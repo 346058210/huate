@@ -3,11 +3,11 @@
 <mapper namespace="com.wuguan.huate.db.HouseMapper">
 	<insert id="addBatch" keyProperty="id" useGeneratedKeys="true">
 		INSERT INTO ht_house (house_no,remark_name,area,address,type,building,unit,room,state,due_time,
-		water_type_id,sale,electic_type_id,rubbish_type_id,property_type_id,park_no,`owner`) VALUES
+		water_type_id,sale,electic_type_id,rubbish_type_id,property_type_id,park_no,`owner`,rubbish_due_time) VALUES
 		<foreach collection="houses" item="house" index="index" separator=",">
 			(#{house.houseNo},#{house.remarkName},#{house.area},#{house.address},#{house.type},#{house.building},
 			#{house.unit},#{house.room},#{house.state},#{house.dueTime},#{house.waterTypeId},#{house.sale},
-			#{house.electicTypeId},#{house.rubbishTypeId},#{house.propertyTypeId},#{house.parkNo},#{house.owner})
+			#{house.electicTypeId},#{house.rubbishTypeId},#{house.propertyTypeId},#{house.parkNo},#{house.owner},#{house.rubbishDueTime})
 		</foreach>
 	</insert>
 	<insert id="addData">
@@ -62,7 +62,10 @@
 				park_no,
 			</if>
 			<if test="owner!=null and owner!=''">
-				`owner`
+				`owner`,
+			</if>
+			<if test="rubbishDueTime!=null and rubbishDueTime!=''">
+				rubbish_due_time
 			</if>
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -115,7 +118,10 @@
 				#{parkNo},
 			</if>
 			<if test="owner!=null and owner!=''">
-				#{owner}
+				#{owner},
+			</if>
+			<if test="rubbishDueTime!=null and rubbishDueTime!=''">
+				#{rubbishDueTime}
 			</if>
 		</trim>
 	</insert>
@@ -177,7 +183,10 @@
 				is_del=#{isDel},
 			</if>
 			<if test="noticeTime!=null and noticeTime!=''">
-				notice_time=#{noticeTime}
+				notice_time=#{noticeTime},
+			</if>
+			<if test="rubbishDueTime!=null and rubbishDueTime!=''">
+				rubbish_due_time=#{rubbishDueTime}
 			</if>
 		</set>
 		WHERE id=#{id}
@@ -188,7 +197,7 @@
 	<select id="getListHouse" resultType="com.wuguan.huate.bean.entity.House">
 		SELECT id,house_no houseNo,remark_name remarkName,area,address,type,building,unit,room,state,
 		water_type_id waterTypeId,sale,due_time dueTime,electic_type_id electicTypeId,rubbish_type_id rubbishTypeId,
-		property_type_id propertyTypeId,park_no parkNo,`owner`
+		property_type_id propertyTypeId,park_no parkNo,`owner`,rubbish_due_time rubbishDueTime
 		FROM ht_house 
 		<where>
 			is_del=0
@@ -208,7 +217,7 @@
 	<select id="getHouses" resultType="com.wuguan.huate.bean.entity.House">
 		SELECT id,house_no houseNo,remark_name remarkName,area,address,type,building,unit,room,state,
 		due_time dueTime,water_type_id waterTypeId,sale,electic_type_id electicTypeId,rubbish_type_id rubbishTypeId,
-		property_type_id propertyTypeId,park_no parkNo,`owner` FROM ht_house where is_del=0
+		property_type_id propertyTypeId,park_no parkNo,`owner`,rubbish_due_time rubbishDueTime FROM ht_house where is_del=0
 	</select>
 	
 	<select id="getBuildings" resultType="java.lang.Integer">
@@ -224,7 +233,7 @@
 	<select id="getHousesByOpenid" resultType="com.wuguan.huate.bean.entity.House">
 		SELECT h.id,h.house_no houseNo,h.remark_name remarkName,h.area,h.address,h.type,h.building,h.unit,h.room,h.state,
 		h.due_time dueTime,h.water_type_id waterTypeId,h.sale,h.electic_type_id electicTypeId,h.rubbish_type_id rubbishTypeId,
-		h.property_type_id propertyTypeId,h.park_no parkNo,h.`owner`
+		h.property_type_id propertyTypeId,h.park_no parkNo,h.`owner`,h.rubbish_due_time rubbishDueTime
 		FROM ht_user u
 		LEFT JOIN ht_user_house uh ON u.id=uh.user_id
 		LEFT JOIN ht_house h ON uh.house_id=h.id
@@ -233,18 +242,18 @@
 	<select id="getHouseByHouseNo" resultType="com.wuguan.huate.bean.entity.House">
 		SELECT id,house_no houseNo,remark_name remarkName,area,address,type,building,unit,room,state,
 		due_time dueTime,water_type_id waterTypeId,sale,electic_type_id electicTypeId,rubbish_type_id rubbishTypeId,
-		property_type_id propertyTypeId,park_no parkNo,`owner` FROM ht_house WHERE house_no=#{houseNo} AND is_del=0
+		property_type_id propertyTypeId,park_no parkNo,`owner`,rubbish_due_time rubbishDueTime FROM ht_house WHERE house_no=#{houseNo} AND is_del=0
 	</select>
 	<select id="queryShop" resultType="com.wuguan.huate.bean.entity.House">
 		SELECT
 			id,house_no houseNo,remark_name remarkName,area,address,type,building,unit,room,state,due_time dueTime,water_type_id waterTypeId,sale,
-			electic_type_id electicTypeId,rubbish_type_id rubbishTypeId,property_type_id propertyTypeId,park_no parkNo,`owner`
+			electic_type_id electicTypeId,rubbish_type_id rubbishTypeId,property_type_id propertyTypeId,park_no parkNo,`owner`,rubbish_due_time rubbishDueTime
 		FROM ht_house WHERE `owner`	LIKE CONCAT('%',#{name},'%') AND is_del=0
 	</select>
 	<select id="pageData" resultType="com.wuguan.huate.bean.entity.House">
 		SELECT id,house_no houseNo,remark_name remarkName,area,address,type,building,unit,room,state,
 		due_time dueTime,water_type_id waterTypeId,sale,electic_type_id electicTypeId,rubbish_type_id rubbishTypeId,
-		property_type_id propertyTypeId,park_no parkNo,`owner` FROM ht_house
+		property_type_id propertyTypeId,park_no parkNo,`owner`,rubbish_due_time rubbishDueTime FROM ht_house
 		<where>
 			is_del=0
 			AND type!=3
@@ -255,15 +264,24 @@
 				AND type=#{type}
 			</if>
 			<if test="state!=null and state!=''">
-				AND state=#{state}
+				AND state=#{state},
+			</if>
+			<if test="building!=null and building!=''">
+				AND building=#{building},
+			</if>
+			<if test="unit!=null and unit!=''">
+				AND unit=#{unit},
+			</if>
+			<if test="room!=null and room!=''">
+				AND room LIKE CONCAT('%',#{room},'%')
 			</if>
 		</where>
-		ORDER BY id DESC,due_time ASC
+		ORDER BY building ASC,unit ASC,room ASC
 	</select>
 	<select id="shopPageData" resultType="com.wuguan.huate.bean.entity.House">
 		SELECT id,house_no houseNo,remark_name remarkName,area,address,type,building,unit,room,state,
 		due_time dueTime,water_type_id waterTypeId,sale,electic_type_id electicTypeId,rubbish_type_id rubbishTypeId,
-		property_type_id propertyTypeId,park_no parkNo,`owner` FROM ht_house
+		property_type_id propertyTypeId,park_no parkNo,`owner`,rubbish_due_time rubbishDueTime FROM ht_house
 		<where>
 			is_del=0
 			AND type=3
@@ -274,12 +292,12 @@
 				AND state=#{state}
 			</if>
 		</where>
-		ORDER BY id DESC,due_time ASC
+		ORDER BY building ASC,unit ASC,room ASC
 	</select>
 	<select id="detailData" resultType="com.wuguan.huate.bean.entity.House">
 		SELECT id,house_no houseNo,remark_name remarkName,area,address,type,building,unit,room,state,
 		due_time dueTime,water_type_id waterTypeId,sale,electic_type_id electicTypeId,rubbish_type_id rubbishTypeId,
-		property_type_id propertyTypeId,park_no parkNo,`owner` FROM ht_house WHERE id=#{id}
+		property_type_id propertyTypeId,park_no parkNo,`owner`,rubbish_due_time rubbishDueTime FROM ht_house WHERE id=#{id}
 	</select>
 	<select id="isExist" resultType="java.lang.Integer">
 		SELECT 1 FROM ht_house 
@@ -297,17 +315,19 @@
 	<select id="getListHouseByUserId" resultType="com.wuguan.huate.bean.entity.House">
 		SELECT h.id,h.house_no houseNo,h.remark_name remarkName,h.area,h.address,h.type,h.building,h.unit,h.room,h.state,
 		h.due_time dueTime,h.water_type_id waterTypeId,h.sale,h.electic_type_id electicTypeId,h.rubbish_type_id rubbishTypeId,
-		h.property_type_id propertyTypeId,h.park_no parkNo,h.`owner` FROM ht_house h
+		h.property_type_id propertyTypeId,h.park_no parkNo,h.`owner`,h.rubbish_due_time rubbishDueTime FROM ht_house h
 		LEFT JOIN ht_user_house uh ON h.id=uh.house_id
-		WHERE uh.user_id=#{userId}
+		WHERE uh.user_id=#{userId} AND h.is_del=0
 	</select>
 	<select id="queryExpireHouse" resultType="com.wuguan.huate.bean.vo.HouseM">
 		SELECT h.id,h.house_no houseNo,h.remark_name remarkName,h.area,h.address,h.type,h.building,h.unit,h.room,h.state,
 			h.due_time dueTime,h.water_type_id waterTypeId,h.sale,h.electic_type_id electicTypeId,h.rubbish_type_id rubbishTypeId,
-			h.property_type_id propertyTypeId,h.park_no parkNo,h.`owner`,u.openid
+			h.property_type_id propertyTypeId,h.park_no parkNo,h.`owner`,u.openid,h.rubbish_due_time rubbishDueTime
 		FROM ht_house h
 		LEFT JOIN ht_user_house uh ON h.id=uh.house_id
 		LEFT JOIN ht_user u ON u.id=uh.user_id
-		WHERE TIMESTAMPDIFF(DAY,h.due_time,NOW())>3 AND (DATE_FORMAT(h.notice_time,'%Y-%m')!=DATE_FORMAT(NOW(),'%Y-%m') OR h.notice_time IS NULL) AND u.openid IS NOT NULL
+		WHERE TIMESTAMPDIFF(DAY,h.due_time,NOW())>3 AND (DATE_FORMAT(h.notice_time,'%Y-%m')!=DATE_FORMAT(NOW(),'%Y-%m') OR h.notice_time IS NULL) 
+		AND u.openid IS NOT NULL
+		AND h.is_del=0
 	</select>
 </mapper>

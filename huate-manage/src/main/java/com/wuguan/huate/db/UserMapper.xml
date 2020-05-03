@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuguan.huate.db.UserMapper">	
+	<select id="detail" resultType="com.wuguan.huate.bean.entity.User">
+		SELECT id,`name`,phone,address,create_time createTime,update_time updateTime,sex,birth_date birthDate,nickname,openid,is_use isUse,token
+		FROM ht_user WHERE id=#{id}
+	</select>
+</mapper>

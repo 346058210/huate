@@ -106,7 +106,7 @@ public class OrderServiceImpl implements OrderService {
 		for (Object obj : list) {
 			JSONObject info = JSONObject.parseObject(obj.toString());
 			Object any = info.get("detail");
-			if (info.getInteger("feeType")==FeeNormEnums.FeeTypeEnum.PROPERTY.getValue()||info.getInteger("feeType")==FeeNormEnums.FeeTypeEnum.RUBBISH.getValue()) {
+			if (info.getInteger("feeType")==FeeNormEnums.FeeTypeEnum.PROPERTY.getValue()) {
 				desc+="物业管理费";
 				List<PropertyOrderDetail> details = JSON.parseArray(any.toString(), PropertyOrderDetail.class);
 				for (PropertyOrderDetail detail : details) {
@@ -125,6 +125,25 @@ public class OrderServiceImpl implements OrderService {
 					items.add(item);
 					money+=detail.getMoney();
 				}
+			}else if (info.getInteger("feeType")==FeeNormEnums.FeeTypeEnum.RUBBISH.getValue()) {
+				desc+="|生活垃圾费";
+				List<PropertyOrderDetail> details = JSON.parseArray(any.toString(), PropertyOrderDetail.class);
+				for (PropertyOrderDetail detail : details) {
+					OrderItem item = new OrderItem();
+					String alias=(detail.getType()==HouseEnums.TypeEnum.BUSINESS.getValue())?shopName+"|":(detail.getHouseNo()!=null?detail.getHouseNo()+"|":"");
+					item.setDesc(alias+detail.getName()+"|"+detail.getTimeFrame()+"|"+detail.getMoney()/100.0);
+					item.setDueTime(detail.getDaoqi_time());
+					item.setFeeTypeId(info.getInteger("feeType"));
+					item.setMoney(detail.getMoney()/100.0);
+					item.setNum(detail.getMonth());
+					item.setOrderNo(orderNo);
+					item.setRelationId(detail.getHouseId());
+					item.setUserId(user.getId());
+					item.setName(detail.getHouseNo()+detail.getName());
+					items.add(item);
+					money+=detail.getMoney();
+				}
+				
 			}else if (info.getInteger("feeType")==FeeNormEnums.FeeTypeEnum.PARKRENT.getValue()) {
 				desc+="|车位租赁费";
 				List<ParkOrderDetail> details = JSON.parseArray(any.toString(), ParkOrderDetail.class);

@@ -160,7 +160,8 @@ public class OrderController {
 					params.put("phrase4", phrase);
 					params.put("date3", date);
 					baseService.subscribeMessageSend(accessToken, user.getOpenid(),
-							"pages/order/details/details?id=" + orderNo, Constant.PAY_TEMPLATEID, params);
+							"pages/order/details/details?id=" + orderNo, Constant.PAY_TEMPLATEID, params,
+							Constant.XJ_APPID, Constant.XJ_SECRET);
 
 				} else {
 					orderService.closeOrder(orderNo, 0);

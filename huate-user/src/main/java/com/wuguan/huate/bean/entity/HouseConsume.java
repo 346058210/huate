@@ -38,5 +38,7 @@ public class HouseConsume implements Serializable{
 	private Double dosage;                         //用量
 	private String explain;                        //收費說明
 	private String noticeTime;							//通知时间
+	private Double startQuan;							//起始用量
+	private Double endQuan;							//结束用量
 
 }

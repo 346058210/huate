@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuguan.huate.db.RepairsMapper">
+	<update id="updateData">
+		UPDATE ht_repairs
+		<set>
+			<if test="reportId!=null and reportId!=''">
+				report_id=#{reportId} ,
+			</if>
+			<if test="reportType!=null and reportType!=''">
+				report_type=#{reportType} ,
+			</if>
+			<if test="uploadPath!=null">
+				upload_path=#{uploadPath},
+			</if>
+			<if test="content!=null and content!=''">
+				content=#{content},
+			</if>
+			<if test="appointmentTime!=null and appointmentTime!=''">
+				appointment_time=#{appointmentTime},
+			</if>
+			<if test="state!=null and state!=''">
+				state=#{state},
+			</if>
+			<if test="handlerId!=null and handlerId!=''">
+				handler_id=#{handlerId},
+			</if>
+			<if test="handler!=null and handler!=''">
+				`handler`=#{handler},
+			</if>
+			<if test="handlePhone!=null and handlePhone!=''">
+				handle_phone=#{handlePhone},
+			</if>
+			<if test="createTime!=null and createTime!=''">
+				create_time=#{createTime},
+			</if>
+			<if test="serveAddr!=null and serveAddr!=''">
+				serve_addr=#{serveAddr},
+			</if>
+			<if test="audit!=null and audit!=''">
+				audit=#{audit},
+			</if>
+			<if test="auditPhone!=null and auditPhone!=''">
+				audit_phone=#{auditPhone},
+			</if>
+			<if test="auditId!=null and auditId!=''">
+				audit_id=#{auditId}
+			</if>
+		</set>
+		WHERE id=#{id}
+	</update>
+	<select id="detailData" resultType="com.wuguan.huate.bean.entity.Repairs">
+		SELECT 
+			id,report_id reportId,report_type reportType,upload_path uploadPath,appointment_time appointmentTime,state,`handler`,handler_id handlerId,
+			handle_phone handlePhone,create_time createTime,serve_addr serveAddr,audit,audit_phone auditPhone,audit_id auditId,content 
+		FROM ht_repairs WHERE id=#{id}
+	</select>
+	<select id="pageData" resultType="com.wuguan.huate.bean.entity.Repairs">
+		SELECT 
+			id,report_id reportId,report_type reportType,upload_path uploadPath,appointment_time appointmentTime,state,`handler`,handler_id handlerId,
+			handle_phone handlePhone,create_time createTime,serve_addr serveAddr,audit,audit_phone auditPhone,audit_id auditId,content 
+		FROM ht_repairs
+		<where>
+			1=1
+			<if test="state!=null and state!=''">
+				AND state=#{state}
+			</if>
+			<if test="content!=null and content!=''">
+				AND CONCAT_WS(',',`handler`,handle_phone,audit,audit_phone) LIKE CONCAT('%',#{content},'%')
+			</if>
+		</where>
+		ORDER BY create_time DESC
+	</select>
+</mapper>

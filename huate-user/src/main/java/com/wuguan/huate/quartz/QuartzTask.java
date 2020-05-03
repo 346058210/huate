@@ -62,7 +62,7 @@ public class QuartzTask extends BaseService{
 	/**
 	 * 
 	* @Title: createRandom
-	* @Description: 检查到期物业，通知缴费
+	* @Description: 检查到期物业，通知缴费   每天6点
 	 */
 	//@Scheduled(cron ="0 0 18 * * ?")
 	//public void checkExpireHouse() {
@@ -127,7 +127,7 @@ public class QuartzTask extends BaseService{
 						params.put("phrase4", phrase);
 						params.put("date3", date);
 						String data = JSONObject.toJSON(params).toString();
-						super.subscribeMessageSend(accessToken, user.getOpenid(),"pages/order/details/details?id="+orderNo,Constant.PAY_TEMPLATEID, data);
+						super.subscribeMessageSend(accessToken, user.getOpenid(),"pages/order/details/details?id="+orderNo,Constant.PAY_TEMPLATEID, data,Constant.XJ_APPID, Constant.XJ_SECRET);
 					}else if ("PAYERROR".equals(tradeState)) {
 						orderService.closeOrder(orderNo, 0);
 					}else if ("NOTPAY".equals(tradeState)) {

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wuguan.huate.db.RoleMapper">
 	<select id="isExist" resultType="java.lang.Integer">
-		SELECT 1 FROM ht_role
+		SELECT COUNT(1) FROM ht_role
 		<where>
 			<if test="roleName!=null and roleName!=''">
 				role_name=#{roleName}
@@ -14,19 +14,19 @@
 		</where>
 	</select>
 	<select id="isUse" resultType="java.lang.Integer">
-		SELECT 1 FROM ht_worker_role WHERE role_id=#{roleId}
+		SELECT COUNT(1) FROM ht_worker_role WHERE role_id=#{roleId}
 	</select>
 	<select id="detailData" resultType="com.wuguan.huate.bean.entity.Role">
 		SELECT id,`desc`,role_name roleName FROM ht_role WHERE id=#{id}
 	</select>
 	<select id="listRoles" resultType="com.wuguan.huate.bean.entity.Role">
-		SELECT id,`desc`,role_name roleName FROM ht_role
+		SELECT id,`desc`,role_name roleName FROM ht_role WHERE is_del=0
 	</select>
-	<insert id="addData">
+	<insert id="addData" keyProperty="id" useGeneratedKeys="true">
 		INSERT INTO ht_role
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<if test="desc!=null and desc!=''">
-				desc,
+				`desc`,
 			</if>
 			<if test="roleName!=null and roleName!=''">
 				role_name
@@ -46,7 +46,7 @@
 		UPDATE ht_role 
 		<set>
 			<if test="desc!=null and desc!=''">
-				desc=#{desc},
+				`desc`=#{desc},
 			</if>
 			<if test="roleName!=null and roleName!=''">
 				role_name=#{roleName}
@@ -58,7 +58,7 @@
 		WHERE id=#{id}
 	</update>
 	<select id="getRolesByWorkerId" resultType="com.wuguan.huate.bean.entity.Role">
-		SELECT id,`desc`,role_name roleName FROM ht_role r
+		SELECT r.id,r.`desc`,r.role_name roleName FROM ht_role r
 		LEFT JOIN ht_worker_role wr ON r.id=wr.role_id
 		WHERE wr.worker_id=#{workerId} AND r.is_del=0
 	</select>

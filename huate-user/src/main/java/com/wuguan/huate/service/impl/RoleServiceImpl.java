@@ -54,7 +54,7 @@ public class RoleServiceImpl implements RoleService {
 	 */
 	@Override
 	public void update(Role role) {
-		Boolean exist = isExist(role.getRoleName(), null);
+		Boolean exist = isExist(role.getRoleName(), role.getId());
 		if (exist) {
 			throw new CustomException(ResultEnums.BUSINESS.getCode(), "此角色名稱已存在");
 		}

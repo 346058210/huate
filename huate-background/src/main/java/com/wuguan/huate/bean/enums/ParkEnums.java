@@ -17,7 +17,7 @@ package com.wuguan.huate.bean.enums;
  */
 public class ParkEnums {
 	public enum TypeEnum {
-		RENT(1, "租停"), BUY(2, "购买");
+		RENT(1, "租停"), BUY(2, "购买"),VACANCY(3, "空置");
 		private Integer value;
 		private String name;
 
@@ -99,7 +99,7 @@ public class ParkEnums {
 
 		public static GenreEnum getByName(String name) {
 			for (GenreEnum genre : values()) {
-				if (genre.equals(name)) {
+				if (name.equals(genre.getName())) {
 					return genre;
 				}
 			}

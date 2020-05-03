@@ -131,6 +131,7 @@
 		SELECT 1 FROM ht_worker
 		<where>
 			1=1
+			AND is_del=0
 			<if test="phone!=null and phone!=''">
 				AND phone=#{phone}
 			</if>
@@ -151,7 +152,7 @@
 			sex,birth_date birthDate,nickname,openid,`password`,job,is_use isUse 
 		FROM ht_worker
 		<where>
-			is_del=2
+			is_del=0
 			<if test="content!=null and content!=''">
 				AND CONCAT_WS(',',`name`,nickname,phone) LIKE CONCAT('%',#{content},'%')
 			</if>
@@ -164,6 +165,6 @@
 		SELECT 
 			id,`name`,phone,create_time createTime,update_time updateTime,
 			sex,birth_date birthDate,nickname,openid,`password`,job,is_use isUse 
-		FROM ht_worker WHERE phone=#{phone} AND is_del=2
+		FROM ht_worker WHERE phone=#{phone} AND is_del=0
 	</select>
 </mapper>

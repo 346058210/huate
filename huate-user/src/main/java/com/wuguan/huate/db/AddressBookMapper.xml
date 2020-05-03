@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuguan.huate.db.AddressBookMapper">
+	<select id="pageData" resultType="com.wuguan.huate.bean.entity.AddressBook">
+		SELECT id,`name`,phone,address,is_inner isInner FROM ht_addressbook
+		<where>
+			1=1
+			<if test="content!=null and content!=''">
+				AND CONCAT_WS(',',`name`,phone,address) LIKE CONCAT('%',#{content},'%')
+			</if>
+			<if test="isInner!=null and isInner!=''">
+				AND is_inner=#{isInner}
+			</if>
+		</where>
+		ORDER BY sequence ASC
+	</select>
+</mapper>

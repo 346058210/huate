@@ -47,5 +47,6 @@ public class House implements Serializable {
 	private String parkNo;                          //绑定车牌，可以绑定多个以逗号分隔
 	private String owner;							//业主
 	private String noticeTime;							//通知时间
+	private String rubbishDueTime;
 
 }

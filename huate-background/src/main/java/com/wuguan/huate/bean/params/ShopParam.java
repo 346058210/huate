@@ -39,13 +39,13 @@ public class ShopParam implements Serializable {
 	@ImportField(required = true)
 	private String shopNo;
 	@ExportField(columnName = "地址")
-	@ImportField(required = true )
+	@ImportField()
 	private String address;
 	@ExportField(columnName = "面积")
 	@ImportField(required = true)
 	private Double shopArea;       
 	@ExportField(columnName = "是否出售（是|否）")
-	@ImportField(required = true)
+	@ImportField()
 	private String sale;                            //是否出售 1 是 0 否
 	@ExportField(columnName = "水费类型（根据收费标准表匹配）")
 	@ImportField(required = true )

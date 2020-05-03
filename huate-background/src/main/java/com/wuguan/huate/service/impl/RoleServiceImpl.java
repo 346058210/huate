@@ -40,12 +40,12 @@ public class RoleServiceImpl implements RoleService {
 	public void add(Role role) {
 		Boolean exist = isExist(role.getRoleName(), null);
 		if (exist) {
-			throw new CustomException(ResultEnums.BUSINESS.getCode(), "此角色名稱已存在");
+			throw new CustomException(ResultEnums.BUSINESS.getCode(), "此角色名称已存在");
 		}
 		try {
 			roleMapper.addData(role);
 		} catch (Exception e) {
-			throw new CustomException(ResultEnums.BUSINESS.getCode(), "新增失敗");
+			throw new CustomException(ResultEnums.BUSINESS.getCode(), "新增失败");
 		}
 	}
 	
@@ -54,14 +54,14 @@ public class RoleServiceImpl implements RoleService {
 	 */
 	@Override
 	public void update(Role role) {
-		Boolean exist = isExist(role.getRoleName(), null);
+		Boolean exist = isExist(role.getRoleName(), role.getId());
 		if (exist) {
-			throw new CustomException(ResultEnums.BUSINESS.getCode(), "此角色名稱已存在");
+			throw new CustomException(ResultEnums.BUSINESS.getCode(), "此角色名称已存在");
 		}
 		try {
 			roleMapper.updateData(role);
 		} catch (Exception e) {
-			throw new CustomException(ResultEnums.BUSINESS.getCode(), "修改失敗");
+			throw new CustomException(ResultEnums.BUSINESS.getCode(), "修改失败");
 		}
 		
 	}
@@ -87,7 +87,7 @@ public class RoleServiceImpl implements RoleService {
 	@Override
 	public Boolean isExist(String roleName,Integer id) {
 		Integer exist = roleMapper.isExist(roleName, id);
-		if (exist!=null) {
+		if (exist!=0) {
 			return true;
 		}
 		return false;
@@ -101,7 +101,7 @@ public class RoleServiceImpl implements RoleService {
 	@Override
 	public Boolean isUse(Integer id) {
 		Integer use=roleMapper.isUse(id);
-		if (use!=null) {
+		if (use!=0) {
 			return true;
 		}
 		return false;

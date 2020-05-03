@@ -54,7 +54,7 @@ public class HouseParam implements Serializable{
 	private Integer room;                           //房號
 	
 	@ExportField(columnName = "地址")
-	@ImportField(required = true )
+	@ImportField()
 	private String address;                         //地址
 	
 	@ExportField(columnName = "面积")
@@ -89,13 +89,13 @@ public class HouseParam implements Serializable{
 	@ImportField(required = true)
 	private String propertyType;                  //物管收费标准
 	
-	@ExportField(columnName = "绑定车位号（可以是多个以逗号分割）")
+	@ExportField(columnName = "物业费到期时间")
 	@ImportField()
-	private String parkNo;                          //绑定车牌，可以绑定多个以逗号分隔
-	
-	@ExportField(columnName = "垃圾、物业费到期时间")
+	private String dueTime;
+	//物業費到期時間
+	@ExportField(columnName = "垃圾费到期时间")
 	@ImportField()
-	private String dueTime;                         //物業費到期時間
+	private String rubbishDueTime;
 	
 	@ExportField(columnName = "备注")
 	@ImportField()

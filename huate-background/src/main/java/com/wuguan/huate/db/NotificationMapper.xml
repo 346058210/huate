@@ -1,7 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wuguan.huate.db.NotificationMapper">
-	<insert id="publishNotification">
-		INSERT INTO ht_notification (publisher,content,publish_time) VALUES (#{publisher},#{content},#{publishTime})
+	<insert id="publishNotification" keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_notification (publisher,content,publish_time,title) VALUES (#{publisher},#{content},#{publishTime},#{title})
 	</insert>
+	<update id="updateData">
+		UPDATE ht_notification
+		<set>
+			<if test="publisher!=null and publisher!=''">
+				publisher=#{publisher},
+			</if>
+			<if test="content!=null and content!=''">
+				content=#{content},
+			</if>
+			<if test="publishTime!=null and publishTime!=''">
+				publish_time=#{publishTime},
+			</if>
+			<if test="title!=null and title!=''">
+				title=#{title},
+			</if>
+			<if test="isShow!=null and isShow!=''">
+				is_show=#{isShow}
+			</if>
+		</set>
+		WHERE id=#{id}
+	</update>
+	<delete id="delData">
+		DELETE FROM ht_notification WHERE id=#{id}
+	</delete>
+	<select id="detailData" resultType="com.wuguan.huate.bean.entity.Notification">
+		SELECT id,publisher,content,publish_time publishTime,is_show isShow,title FROM ht_notification WHERE id=#{id}
+	</select>
+	<select id="pageData" resultType="com.wuguan.huate.bean.entity.Notification">
+		SELECT id,publisher,content,publish_time publishTime,is_show isShow,title FROM ht_notification
+		<where>
+			1=1
+			<if test="keyword!=null and keyword!=''">
+				AND CONCAT_WS(',',publisher,title) LIKE CONCAT('%',#{keyword},'%')
+			</if>
+		</where>
+		ORDER BY publish_time DESC
+	</select>
 </mapper>

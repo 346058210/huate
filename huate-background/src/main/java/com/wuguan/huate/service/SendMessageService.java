@@ -10,6 +10,7 @@ package com.wuguan.huate.service;
 
 import java.util.List;
 
+import com.wuguan.huate.bean.entity.HouseConsume;
 import com.wuguan.huate.bean.vo.UserVo;
 
 /** 
@@ -26,5 +27,12 @@ public interface SendMessageService {
 	void ParkPayFeeMessageSend();
 	
 	void notificationMessageSend(List<UserVo> user,String publisher,String content,String publishTime);
+
+	/**
+	* @Title: consumesPayFeeMessageSend
+	* @Description: TODO(这里用一句话描述这个方法的作用)
+	* @param sendMessages
+	*/
+	void consumesPayFeeMessageSend(List<HouseConsume> sendMessages);
 
 }

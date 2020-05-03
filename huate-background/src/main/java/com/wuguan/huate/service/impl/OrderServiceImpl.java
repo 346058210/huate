@@ -36,6 +36,7 @@ import com.wuguan.huate.bean.params.OrderPageParam;
 import com.wuguan.huate.bean.params.ParkOrderDetail;
 import com.wuguan.huate.bean.params.PayRecordPageParam;
 import com.wuguan.huate.bean.params.PropertyOrderDetail;
+import com.wuguan.huate.bean.vo.OrderItemExcel;
 import com.wuguan.huate.bean.vo.OrderRecord;
 import com.wuguan.huate.bean.vo.OrderVo;
 import com.wuguan.huate.bean.vo.UserVo;
@@ -55,14 +56,14 @@ import com.wuguan.huate.service.UserService;
 import com.wuguan.huate.utils.DateUtils;
 import com.wuguan.huate.web.result.ResultEnums;
 
-/** 
-* @ClassName: OrderServiceImpl 
-* @Description: TODO(这里用一句话描述这个类的作用) 
-* @author LiuYanHong
+/**
+ * @ClassName: OrderServiceImpl
+ * @Description: TODO(这里用一句话描述这个类的作用)
+ * @author LiuYanHong
  * @param <E>
-* @date 2020年3月15日 下午10:22:42 
-*  
-*/
+ * @date 2020年3月15日 下午10:22:42
+ * 
+ */
 @Service
 @Transactional
 public class OrderServiceImpl implements OrderService {
@@ -84,127 +85,162 @@ public class OrderServiceImpl implements OrderService {
 	OrderMapper orderMapper;
 
 	@Override
-	public Map<String, Object> addOrder(HttpServletRequest request,String data) throws CustomException, UnsupportedEncodingException {
+	public Map<String, Object> addOrder(HttpServletRequest request, String data)
+			throws CustomException, UnsupportedEncodingException {
 		ThreadLocalManager bean = SpringUtil.getBean(ThreadLocalManager.class);
 		JSONObject object = JSONObject.parseObject(data);
 		UserVo user = JSONObject.parseObject(bean.getUser().toString(), UserVo.class);
 		String openid = user.getOpenid();
 		int amount = object.getIntValue("amount");
-		String shopName=object.containsKey("shopName")?object.getString("shopName"):"";
-		String houseNo=object.containsKey("houseNo")?object.getString("houseNo"):"";
-		String carNo=object.containsKey("carNo")?object.getString("carNo"):"";
-		String parkNo=object.containsKey("parkNo")?object.getString("parkNo"):"";
+		String shopName = object.containsKey("shopName") ? object.getString("shopName") : "";
+		String houseNo = object.containsKey("houseNo") ? object.getString("houseNo") : "";
+		String carNo = object.containsKey("carNo") ? object.getString("carNo") : "";
+		String parkNo = object.containsKey("parkNo") ? object.getString("parkNo") : "";
 		JSONArray list = object.getJSONArray("data");
-		//生成订单号
-		String orderNo = DateUtils.getNo(new Date())+array.get(0);
-		//删除用过的序列
+		// 生成订单号
+		String orderNo = DateUtils.getNo(new Date()) + array.get(0);
+		// 删除用过的序列
 		array.remove(0);
-		//订单描述
-		String desc="";
+		// 订单描述
+		String desc = "";
 		List<OrderItem> items = new ArrayList<OrderItem>();
-		int money=0;
+		int money = 0;
 		for (Object obj : list) {
 			JSONObject info = JSONObject.parseObject(obj.toString());
 			Object any = info.get("detail");
-			if (info.getInteger("feeType")==FeeNormEnums.FeeTypeEnum.PROPERTY.getValue()||info.getInteger("feeType")==FeeNormEnums.FeeTypeEnum.RUBBISH.getValue()) {
-				desc+="物业管理费";
+			if (info.getInteger("feeType") == FeeNormEnums.FeeTypeEnum.PROPERTY.getValue()) {
+				desc += "物业管理费";
 				List<PropertyOrderDetail> details = JSON.parseArray(any.toString(), PropertyOrderDetail.class);
 				for (PropertyOrderDetail detail : details) {
 					OrderItem item = new OrderItem();
-					String alias=(detail.getType()==HouseEnums.TypeEnum.BUSINESS.getValue())?shopName+"|":(detail.getHouseNo()!=null?detail.getHouseNo()+"|":"");
-					item.setDesc(alias+detail.getName()+"|"+detail.getTimeFrame()+"|"+detail.getMoney()/100.0);
+					String alias = (detail.getType() == HouseEnums.TypeEnum.BUSINESS.getValue()) ? shopName + "|"
+							: (detail.getHouseNo() != null ? detail.getHouseNo() + "|" : "");
+					item.setDesc(
+							alias + detail.getName() + "|" + detail.getTimeFrame() + "|" + detail.getMoney() / 100.0);
 					item.setDueTime(detail.getDaoqi_time());
 					item.setFeeTypeId(info.getInteger("feeType"));
-					item.setMoney(detail.getMoney()/100.0);
+					item.setMoney(detail.getMoney() / 100.0);
 					item.setNum(detail.getMonth());
-					
+
 					item.setOrderNo(orderNo);
 					item.setRelationId(detail.getHouseId());
 					item.setUserId(user.getId());
-					item.setName(detail.getHouseNo()+detail.getName());
+					item.setName(detail.getHouseNo() + detail.getName());
 					items.add(item);
-					money+=detail.getMoney();
+					money += detail.getMoney();
 				}
-			}else if (info.getInteger("feeType")==FeeNormEnums.FeeTypeEnum.PARKRENT.getValue()) {
-				desc+="|车位租赁费";
+			}else if (info.getInteger("feeType") == FeeNormEnums.FeeTypeEnum.RUBBISH.getValue()) {
+				desc += "|生活垃圾费";
+				List<PropertyOrderDetail> details = JSON.parseArray(any.toString(), PropertyOrderDetail.class);
+				for (PropertyOrderDetail detail : details) {
+					OrderItem item = new OrderItem();
+					String alias = (detail.getType() == HouseEnums.TypeEnum.BUSINESS.getValue()) ? shopName + "|"
+							: (detail.getHouseNo() != null ? detail.getHouseNo() + "|" : "");
+					item.setDesc(
+							alias + detail.getName() + "|" + detail.getTimeFrame() + "|" + detail.getMoney() / 100.0);
+					item.setDueTime(detail.getDaoqi_time());
+					item.setFeeTypeId(info.getInteger("feeType"));
+					item.setMoney(detail.getMoney() / 100.0);
+					item.setNum(detail.getMonth());
+
+					item.setOrderNo(orderNo);
+					item.setRelationId(detail.getHouseId());
+					item.setUserId(user.getId());
+					item.setName(detail.getHouseNo() + detail.getName());
+					items.add(item);
+					money += detail.getMoney();
+				}
+			}else if (info.getInteger("feeType") == FeeNormEnums.FeeTypeEnum.PARKRENT.getValue()) {
+				desc += "|车位租赁费";
 				List<ParkOrderDetail> details = JSON.parseArray(any.toString(), ParkOrderDetail.class);
 				for (ParkOrderDetail detail : details) {
 					OrderItem item = new OrderItem();
-					item.setDesc((detail.getParkNo()!=null?detail.getParkNo()+"|":"")+detail.getName()+"|"+detail.getTimeFrame()+"|"+detail.getMoney()/100.0);
+					item.setDesc((detail.getParkNo() != null ? detail.getParkNo() + "|" : "") + detail.getName() + "|"
+							+ detail.getTimeFrame() + "|" + detail.getMoney() / 100.0);
 					item.setDueTime(detail.getDaoqi_time());
 					item.setFeeTypeId(info.getInteger("feeType"));
-					item.setMoney(detail.getMoney()/100.0);
+					item.setMoney(detail.getMoney() / 100.0);
 					item.setNum(detail.getMonth());
 					item.setOrderNo(orderNo);
 					item.setRelationId(detail.getParkId());
 					item.setUserId(user.getId());
-					item.setName(detail.getParkNo()+detail.getName());
+					item.setName(detail.getParkNo() + detail.getName());
 					items.add(item);
-					money+=detail.getMoney();
-				}	
-			}else if (info.getInteger("feeType")==FeeNormEnums.FeeTypeEnum.PARKMANAGE.getValue()) {
-				desc+="|车位管理费";
+					money += detail.getMoney();
+				}
+			} else if (info.getInteger("feeType") == FeeNormEnums.FeeTypeEnum.PARKMANAGE.getValue()) {
+				desc += "|车位管理费";
 				List<ParkOrderDetail> details = JSON.parseArray(any.toString(), ParkOrderDetail.class);
 				for (ParkOrderDetail detail : details) {
 					OrderItem item = new OrderItem();
-					item.setDesc((detail.getParkNo()!=null?detail.getParkNo()+"|":"")+detail.getName()+"|"+detail.getTimeFrame()+"|"+detail.getMoney()/100.0);
+					item.setDesc((detail.getParkNo() != null ? detail.getParkNo() + "|" : "") + detail.getName() + "|"
+							+ detail.getTimeFrame() + "|" + detail.getMoney() / 100.0);
 					item.setDueTime(detail.getDaoqi_time());
 					item.setFeeTypeId(info.getInteger("feeType"));
-					item.setMoney(detail.getMoney()/100.0);
+					item.setMoney(detail.getMoney() / 100.0);
 					item.setNum(detail.getMonth());
 					item.setOrderNo(orderNo);
 					item.setRelationId(detail.getParkId());
 					item.setUserId(user.getId());
-					item.setName(detail.getParkNo()+detail.getName());
+					item.setName(detail.getParkNo() + detail.getName());
 					items.add(item);
-					money+=detail.getMoney();
+					money += detail.getMoney();
 				}
-			}else if (info.getInteger("feeType")==FeeNormEnums.FeeTypeEnum.WATER.getValue()) {
-				desc+="|水费";
+			} else if (info.getInteger("feeType") == FeeNormEnums.FeeTypeEnum.WATER.getValue()) {
+				desc += "|水费";
 				List<ConsumeOrderDetail> details = JSON.parseArray(any.toString(), ConsumeOrderDetail.class);
 				for (ConsumeOrderDetail detail : details) {
 					OrderItem item = new OrderItem();
-					String alias=(detail.getType()==HouseEnums.TypeEnum.BUSINESS.getValue())?shopName+"|":(detail.getHouseNo()!=null?detail.getHouseNo()+"|":"");
-					item.setDesc(alias+detail.getMonth()+FeeNormEnums.FeeTypeEnum.getByValue(info.getInteger("feeType")).getName()+"|"+detail.getMoney()/100.0);
-					//item.setDueTime(detail.getMonth());
+					String alias = (detail.getType() == HouseEnums.TypeEnum.BUSINESS.getValue()) ? shopName + "|"
+							: (detail.getHouseNo() != null ? detail.getHouseNo() + "|" : "");
+					item.setDesc(alias + detail.getMonth()
+							+ FeeNormEnums.FeeTypeEnum.getByValue(info.getInteger("feeType")).getName() + "|"
+							+ detail.getMoney() / 100.0);
+					// item.setDueTime(detail.getMonth());
 					item.setFeeTypeId(info.getInteger("feeType"));
-					item.setMoney(detail.getMoney()/100.0);
+					item.setMoney(detail.getMoney() / 100.0);
 					item.setOrderNo(orderNo);
 					item.setRelationId(detail.getConsumeId());
 					item.setUserId(user.getId());
-					item.setName(detail.getHouseNo()+FeeNormEnums.FeeTypeEnum.getByValue(info.getInteger("feeType")).getName());
+					item.setName(detail.getHouseNo()
+							+ FeeNormEnums.FeeTypeEnum.getByValue(info.getInteger("feeType")).getName());
 					items.add(item);
-					money+=detail.getMoney();
+					money += detail.getMoney();
 				}
-			}else if (info.getInteger("feeType")==FeeNormEnums.FeeTypeEnum.ELECTRIC.getValue()) {
-				desc+="|电费";
+			} else if (info.getInteger("feeType") == FeeNormEnums.FeeTypeEnum.ELECTRIC.getValue()) {
+				desc += "|电费";
 				List<ConsumeOrderDetail> details = JSON.parseArray(any.toString(), ConsumeOrderDetail.class);
 				for (ConsumeOrderDetail detail : details) {
 					OrderItem item = new OrderItem();
-					String alias=(detail.getType()==HouseEnums.TypeEnum.BUSINESS.getValue())?shopName+"|":(detail.getHouseNo()!=null?detail.getHouseNo()+"|":"");
-					item.setDesc(alias+detail.getMonth()+FeeNormEnums.FeeTypeEnum.getByValue(info.getInteger("feeType")).getName()+"|"+detail.getMoney()/100.0);
-					//item.setDueTime(detail.getMonth());
+					String alias = (detail.getType() == HouseEnums.TypeEnum.BUSINESS.getValue()) ? shopName + "|"
+							: (detail.getHouseNo() != null ? detail.getHouseNo() + "|" : "");
+					item.setDesc(alias + detail.getMonth()
+							+ FeeNormEnums.FeeTypeEnum.getByValue(info.getInteger("feeType")).getName() + "|"
+							+ detail.getMoney() / 100.0);
+					// item.setDueTime(detail.getMonth());
 					item.setFeeTypeId(info.getInteger("feeType"));
-					item.setMoney(detail.getMoney()/100.0);
+					item.setMoney(detail.getMoney() / 100.0);
 					item.setOrderNo(orderNo);
 					item.setRelationId(detail.getConsumeId());
 					item.setUserId(user.getId());
-					item.setName(detail.getHouseNo()+FeeNormEnums.FeeTypeEnum.getByValue(info.getInteger("feeType")).getName());
+					item.setName(detail.getHouseNo()
+							+ FeeNormEnums.FeeTypeEnum.getByValue(info.getInteger("feeType")).getName());
 					items.add(item);
-					money+=detail.getMoney();
+					money += detail.getMoney();
 				}
 			}
 		}
-		if (amount!=money) {
-			throw new CustomException(ResultEnums.BUSINESS.getCode(),"共计金额异常");
+		if (amount != money) {
+			throw new CustomException(ResultEnums.BUSINESS.getCode(), "共计金额异常");
 		}
-		//添加订单明细
+		// 添加订单明细
 		orderItemService.addBatch(items);
-		//生成订单
+		// 生成订单
 		Order order = new Order();
-		String content=!shopName.equals("")?(shopName+"|"+(desc.startsWith("|")?desc.substring(1):desc)):(desc.startsWith("|")?desc.substring(1):desc);
+		String content = !shopName.equals("") ? (shopName + "|" + (desc.startsWith("|") ? desc.substring(1) : desc))
+				: (desc.startsWith("|") ? desc.substring(1) : desc);
 		order.setDesc(content);
-		order.setMoney(money/100.0);
+		order.setMoney(money / 100.0);
 		order.setOrderNo(orderNo);
 		order.setUserId(user.getId());
 		order.setCreateTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
@@ -212,34 +248,33 @@ public class OrderServiceImpl implements OrderService {
 		order.setCarNo(carNo);
 		order.setParkNo(parkNo);
 		orderMapper.addOrder(order);
-		//微信后台下单	
+		// 微信后台下单
 		Map<String, Object> map = baseService.createOrder(request, desc, orderNo, money, openid);
-		if (map==null) {
+		if (map == null) {
 			throw new CustomException(ResultEnums.BUSINESS.getCode(), "微信后台统一下单失败");
 		}
 		map.put("orderNo", orderNo);
 		map.put("orderId", order.getId());
-		//修改订单加上支付ID
+		// 修改订单加上支付ID
 		String payId = map.get("package").toString();
-		String substring = payId.substring(payId.indexOf("=")+1, payId.length());
+		String substring = payId.substring(payId.indexOf("=") + 1, payId.length());
 		orderMapper.updateOrderPayId(order.getId(), substring);
 		return map;
 	}
-	
+
 	/**
 	 * @param bit 多少位
-	 * @param num 多少个
-	 * bit 要大于 num 的长度
+	 * @param num 多少个 bit 要大于 num 的长度
 	 */
 	@Override
-	public void createRandom(Integer bit,Integer num) {
+	public void createRandom(Integer bit, Integer num) {
 		for (int i = 0; i < num; i++) {
 			String s = Integer.toString(i);
-			String b="";
-			for (int j = 0; j < bit-s.length(); j++) {
-				b+="0";
+			String b = "";
+			for (int j = 0; j < bit - s.length(); j++) {
+				b += "0";
 			}
-			s=b+s;
+			s = b + s;
 			array.add(s);
 		}
 	}
@@ -248,9 +283,9 @@ public class OrderServiceImpl implements OrderService {
 	 * 关闭订单
 	 */
 	@Override
-	public void closeOrder(String orderNo,Integer sate) {
+	public void closeOrder(String orderNo, Integer sate) {
 		baseService.closeOrders(orderNo);
-		orderMapper.closeOrder(orderNo,sate);
+		orderMapper.closeOrder(orderNo, sate);
 	}
 
 	/**
@@ -258,20 +293,22 @@ public class OrderServiceImpl implements OrderService {
 	 */
 	@Override
 	public void updateOrder(String orderNo, String payTime) {
-		//修改訂單狀態
-		orderMapper.updateOrder(orderNo,payTime);
-		//更新房屋表|車位表|水電消耗表
+		// 修改訂單狀態
+		orderMapper.updateOrder(orderNo, payTime);
+		// 更新房屋表|車位表|水電消耗表
 		List<OrderItem> items = orderItemService.getOrderItemByOrderNo(orderNo);
 		for (OrderItem item : items) {
-			if (item.getFeeTypeId()==FeeNormEnums.FeeTypeEnum.PROPERTY.getValue()||item.getFeeTypeId()==FeeNormEnums.FeeTypeEnum.RUBBISH.getValue()) {
-				//房屋表
-				houseService.updateDueTime(item.getDueTime(),item.getRelationId());
-			}else if (item.getFeeTypeId()==FeeNormEnums.FeeTypeEnum.PARKRENT.getValue()) {
-				//車位表
-				parkService.updateDueTime(item.getDueTime(),item.getRelationId());
-			}else if (item.getFeeTypeId()==FeeNormEnums.FeeTypeEnum.WATER.getValue()||item.getFeeTypeId()==FeeNormEnums.FeeTypeEnum.ELECTRIC.getValue()) {
-				//水電消耗表
-				houseConsumeService.updatePayTime(payTime,item.getRelationId());
+			if (item.getFeeTypeId() == FeeNormEnums.FeeTypeEnum.PROPERTY.getValue()
+					|| item.getFeeTypeId() == FeeNormEnums.FeeTypeEnum.RUBBISH.getValue()) {
+				// 房屋表
+				houseService.updateDueTime(item.getDueTime(), item.getRelationId());
+			} else if (item.getFeeTypeId() == FeeNormEnums.FeeTypeEnum.PARKRENT.getValue()) {
+				// 車位表
+				parkService.updateDueTime(item.getDueTime(), item.getRelationId());
+			} else if (item.getFeeTypeId() == FeeNormEnums.FeeTypeEnum.WATER.getValue()
+					|| item.getFeeTypeId() == FeeNormEnums.FeeTypeEnum.ELECTRIC.getValue()) {
+				// 水電消耗表
+				houseConsumeService.updatePayTime(payTime, item.getRelationId());
 			}
 		}
 	}
@@ -290,12 +327,14 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public PageInfo<OrderVo> pageData(OrderPageParam param) {
 		PageHelper.startPage(param.getPage(), param.getRows());
-		Page<Order> page=orderMapper.pageData(param);
+		Page<Order> page = orderMapper.pageData(param);
 		List<OrderVo> list = new ArrayList<OrderVo>();
 		for (Order order : page) {
 			OrderVo vo = new OrderVo();
 			BeanUtils.copyProperties(order, vo);
-			vo.setPhone(userService.detail(order.getUserId()).getPhone());
+			if (order.getUserId() != null) {
+				vo.setPhone(userService.detail(order.getUserId()).getPhone());
+			}
 			list.add(vo);
 		}
 		return new PageInfo<OrderVo>(page.getTotal(), list);
@@ -307,21 +346,21 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public Object detailData(Integer id) {
 		OrderVo vo = new OrderVo();
-		Order order=orderMapper.detail(id);
+		Order order = orderMapper.detail(id);
 		BeanUtils.copyProperties(order, vo);
 		List<OrderItem> list = orderItemService.getOrderItemByOrderNo(order.getOrderNo());
 		vo.setItems(list);
 		vo.setPhone(userService.detail(order.getUserId()).getPhone());
 		return vo;
 	}
-	
+
 	/**
 	 * 订单详情
 	 */
 	@Override
 	public Object detailDataByOrderNo(String orderNo) {
 		OrderVo vo = new OrderVo();
-		Order order=orderMapper.detailDataByOrderNo(orderNo);
+		Order order = orderMapper.detailDataByOrderNo(orderNo);
 		BeanUtils.copyProperties(order, vo);
 		List<OrderItem> list = orderItemService.getOrderItemByOrderNo(order.getOrderNo());
 		vo.setItems(list);
@@ -330,8 +369,9 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public List<Order> getOrders(OrderPageParam param) {
-		return orderMapper.getOrders(param);
+	public List<OrderItemExcel> getOrders(OrderPageParam param) {
+		List<OrderItemExcel> orders = orderMapper.getOrders(param);
+		return orders;
 	}
 
 	/**
@@ -340,7 +380,8 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public PageInfo<OrderRecord> wyLjPayRecords(PayRecordPageParam param) {
 		PageHelper.startPage(param.getPage(), param.getRows());
-		Page<OrderRecord> page=orderMapper.wyLjPayRecords(param);
+		Page<OrderRecord> page = orderMapper.wyLjPayRecords(param);
+		System.out.println(page.size());
 		return new PageInfo<OrderRecord>(page.getTotal(), page);
 	}
 
@@ -350,7 +391,7 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public PageInfo<OrderRecord> sdPayRecords(PayRecordPageParam param) {
 		PageHelper.startPage(param.getPage(), param.getRows());
-		Page<OrderRecord> page=orderMapper.sdPayRecords(param);
+		Page<OrderRecord> page = orderMapper.sdPayRecords(param);
 		return new PageInfo<OrderRecord>(page.getTotal(), page);
 	}
 
@@ -360,7 +401,7 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public PageInfo<OrderRecord> carPayRecords(PayRecordPageParam param) {
 		PageHelper.startPage(param.getPage(), param.getRows());
-		Page<OrderRecord> page=orderMapper.carPayRecords(param);
+		Page<OrderRecord> page = orderMapper.carPayRecords(param);
 		return new PageInfo<OrderRecord>(page.getTotal(), page);
 	}
 
@@ -369,7 +410,7 @@ public class OrderServiceImpl implements OrderService {
 		ThreadLocalManager bean = SpringUtil.getBean(ThreadLocalManager.class);
 		UserVo user = JSONObject.parseObject(bean.getUser().toString(), UserVo.class);
 		PageHelper.startPage(param.getPage(), param.getRows());
-		Page<Order> page=orderMapper.pageDataByUser(param,user.getId());
+		Page<Order> page = orderMapper.pageDataByUser(param, user.getId());
 		List<OrderVo> list = new ArrayList<OrderVo>();
 		for (Order order : page) {
 			OrderVo vo = new OrderVo();
@@ -383,7 +424,12 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public void closeOrder(String orderNo) {
 		// TODO Auto-generated method stub
-		
+
+	}
+
+	@Override
+	public void verifyOrder(Integer id, Integer checking) {
+		orderMapper.verifyOrder(id,checking);
 	}
 
 }

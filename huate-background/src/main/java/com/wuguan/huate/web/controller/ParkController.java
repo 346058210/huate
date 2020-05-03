@@ -67,25 +67,31 @@ public class ParkController {
 	public ApiResult importExcel(MultipartFile file) throws CustomException, IOException {
 		List<FeeNorm> norms = feeNormService.getFeeNorms();
 		List<Park> parks = new ArrayList<Park>();
-		List<ErrorEntity> errorData = new ArrayList<ErrorEntity>();
+		List<Object> errorData = new ArrayList<Object>();
 		ExcelBoot.ImportBuilder(file.getInputStream(), ParkParam.class).importExcel(new ImportFunction<ParkParam>() {
 
 			@Override
 			public void onProcess(int sheetIndex, int rowIndex, ParkParam entity) {
-				Park park = new Park();
-				BeanUtils.copyProperties(entity, park);
-				park.setType(ParkEnums.TypeEnum.getByName(entity.getTypeName()).getValue());
-				park.setGenre(ParkEnums.GenreEnum.getByName(entity.getGenre()).getValue());
-				for (FeeNorm norm : norms) {
-					if (entity.getNorm().equals(norm.getTypeName())) {
-						park.setNormId(norm.getId());
+				try {
+					Park park = new Park();
+					BeanUtils.copyProperties(entity, park);
+					park.setType(ParkEnums.TypeEnum.getByName(entity.getTypeName()).getValue());
+					park.setGenre(ParkEnums.GenreEnum.getByName(entity.getGenre()).getValue());
+					for (FeeNorm norm : norms) {
+						if (entity.getNorm().equals(norm.getTypeName())) {
+							park.setNormId(norm.getId());
+						}
 					}
+					parks.add(park);
+					if (parks.size() % 100 == 0) {
+						parkService.addBatch(parks);
+						parks.clear();
+					}
+				} catch (Exception e) {
+					errorData.add(entity);
+					e.printStackTrace();
 				}
-				parks.add(park);
-				if (parks.size() % 100 == 0) {
-					parkService.addBatch(parks);
-					parks.clear();
-				}
+				
 			}
 
 			@Override
@@ -93,7 +99,9 @@ public class ParkController {
 				errorData.add(errorEntity);
 			}
 		});
-		parkService.addBatch(parks);
+		if (parks.size()!=0) {
+			parkService.addBatch(parks);
+		}
 		return ApiResult.success(errorData);
 	}
 
@@ -113,7 +121,7 @@ public class ParkController {
 					public ParkParam convert(Park park) {
 						ParkParam param = new ParkParam();
 						BeanUtils.copyProperties(park, param);
-						param.setTypeName(ParkEnums.TypeEnum.getByValue(park.getType()).getName());
+						param.setTypeName(ParkEnums.GenreEnum.getByValue(park.getType()).getName());
 						param.setGenre(ParkEnums.GenreEnum.getByValue(park.getGenre()).getName());
 						for (FeeNorm norm : norms) {
 							if (park.getNormId() == norm.getId()) {
@@ -173,7 +181,7 @@ public class ParkController {
 	@RequestMapping(value = "/park/addData", method = RequestMethod.POST)
 	public ApiResult addData(Park park) throws CustomException {
 		parkService.addData(park);
-		return ApiResult.success();
+		return ApiResult.success(park.getId());
 	}
 
 	/**

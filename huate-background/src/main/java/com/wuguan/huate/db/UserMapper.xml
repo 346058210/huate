@@ -2,9 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wuguan.huate.db.UserMapper">
 	<select id="isExist" resultType="java.lang.Integer">
-		SELECT 1 FROM ht_user WHERE openid=#{openid}
+		SELECT COUNT(1) FROM ht_user WHERE openid=#{openid}
 	</select>
-	
+	<select id="todayRegisterNum" resultType="java.lang.Integer">
+		SELECT COUNT(id) FROM ht_user WHERE DATE_FORMAT(create_time,'%Y-%m-%d')=DATE_FORMAT(NOW(),'%Y-%m-%d')
+	</select>
 	<insert id="addData" keyProperty="id" useGeneratedKeys="true">
 		INSERT INTO ht_user
 		<trim prefix="(" suffix=")" suffixOverrides=",">
@@ -121,7 +123,7 @@
 	<select id="getUsersByContent" resultType="com.wuguan.huate.bean.entity.User">
 		SELECT id,`name`,phone,address,create_time createTime,update_time updateTime,sex,birth_date birthDate,nickname,openid,is_use isUse,token FROM ht_user
 		<where>
-			 is_del=2
+			 is_del=0
 			<if test="content!=null and content!=''">
 				AND phone=#{content}
 			</if>

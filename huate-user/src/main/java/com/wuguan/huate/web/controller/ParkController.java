@@ -145,6 +145,8 @@ public class ParkController {
 					builder.append(s);
 					builder.append(",");
 				}
+				if (park.getGenre()!=null)
+					bind.setGenre(ParkEnums.GenreEnum.getByValue(park.getGenre()).getName());
 				bind.setOwner(builder.substring(0, builder.length() - 1));
 				for (FeeNorm norm : norms) {
 					if (norm.getId() == park.getNormId()) {

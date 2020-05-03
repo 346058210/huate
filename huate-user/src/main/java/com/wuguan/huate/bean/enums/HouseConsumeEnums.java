@@ -65,7 +65,7 @@ public class HouseConsumeEnums {
 	}
 
 	public enum PayEnum {
-		YES(1, "是"), NO(2, "否");
+		YES(1, "是"), NO(0, "否");
 
 		private Integer value;
 		private String name;

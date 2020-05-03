@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuguan.huate.db.LiveServeMapper">
+	<select id="queryLiveServes" resultType="com.wuguan.huate.bean.entity.LiveServe">
+		SELECT id,`name`,`desc`,upload_path uploadPath,`explain`,is_del isDel,audit,audit_phone auditPhone,audit_id auditId,serve_time serveTime FROM ht_live_serve WHERE is_del=0
+	</select>
+	<select id="detailLiveServe" resultType="com.wuguan.huate.bean.entity.LiveServe">
+		SELECT id,`name`,`desc`,upload_path uploadPath,`explain`,is_del isDel,audit,audit_phone auditPhone,audit_id auditId,serve_time serveTime FROM ht_live_serve WHERE id=#{id}
+	</select>
+</mapper>

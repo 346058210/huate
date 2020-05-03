@@ -39,8 +39,8 @@ public class Worker implements Serializable {
 	private String nickname;                        //暱稱
 	private String openid;                         //微信upenId
 	private String password;                         //微信密码
-	private Integer job;                         //职业 1管理人员|2 维修工程师|3 保安
 	private Integer isUse;                         //1 启用 0 禁用
 	private String tokenPc;                        //出生年月
 	private String tokenMobile;                        //出生年月
+	private Integer roleId; 
 }

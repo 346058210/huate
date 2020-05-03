@@ -22,6 +22,8 @@ public class TokenInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
+		String requestURI = request.getRequestURI();
+		System.err.println(requestURI);
 		environment = SpringUtil.getBean(Environment.class);
 		redisHelper = SpringUtil.getBean(RedisHelper.class);
 		ThreadLocalManager manager = SpringUtil.getBean(ThreadLocalManager.class);

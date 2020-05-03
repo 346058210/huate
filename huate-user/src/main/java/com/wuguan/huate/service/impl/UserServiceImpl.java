@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService {
 		}
 		User user = new User();
 		user.setId(id);
-		user.setIsDel(2);
+		user.setIsDel(1);
 		userMapper.updateData(user);
 	}
 	

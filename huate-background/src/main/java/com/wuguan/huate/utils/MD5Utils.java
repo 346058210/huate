@@ -1,12 +1,5 @@
 package com.wuguan.huate.utils;
 
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.util.Date;
-
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 
 /**
@@ -39,9 +32,11 @@ public static final String SALT="123456";
 		return ENCODER.isPasswordValid(encPass, rawPass, salt);
 	}
 
-	public static void main(String[] args) throws ParseException {
-		String password="123456";
-		String encodePassword = encodePassword(password, SALT);
-		System.out.println(encodePassword);
+	public static void main(String[] args) {
+		String password="1-1-201";
+		String[] split = password.split("\\|");
+		for (String string : split) {
+			System.out.println(string);
+		}
 	}
 }

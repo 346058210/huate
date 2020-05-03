@@ -163,7 +163,7 @@ public class UserController {
 	}
 	
 	@Function(key = "userExportExcel")
-	@RequestMapping(value = "/user/exportExcel", method = RequestMethod.POST)
+	@RequestMapping(value = "/user/exportExcel", method = RequestMethod.GET)
 	public void exportExcel(HttpServletResponse response) throws CustomException {
 		ExcelBoot.ExportBuilder(response, "用户信息表", UserExcel.class).exportResponse(null,
 				new ExportFunction<Object, UserVo>() {

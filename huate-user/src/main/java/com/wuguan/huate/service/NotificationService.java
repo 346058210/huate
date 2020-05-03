@@ -9,6 +9,8 @@
 package com.wuguan.huate.service;
 
 import com.wuguan.huate.bean.entity.Notification;
+import com.wuguan.huate.bean.params.PageParams;
+import com.wuguan.huate.comm.PageInfo;
 
 /** 
 * @ClassName: NotificationService 
@@ -20,5 +22,20 @@ import com.wuguan.huate.bean.entity.Notification;
 public interface NotificationService {
 	
 	void publishNotification(Notification notification);
+
+	/**
+	* @Title: queryNotifications
+	* @Description: TODO(这里用一句话描述这个方法的作用)
+	* @return
+	*/
+	PageInfo<Notification> queryNotifications(PageParams params);
+
+	/**
+	* @Title: detailData
+	* @Description: TODO(这里用一句话描述这个方法的作用)
+	* @param id
+	* @return
+	*/
+	Notification detailData(Integer id);
 
 }
