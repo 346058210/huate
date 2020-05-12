@@ -392,10 +392,12 @@ public class FeeCountServiceImpl implements FeeCountService {
 			for (House house : houses) {
 				for (FeeNorm norm : norms) {
 					if (house.getPropertyTypeId() == norm.getId()) {
-						money += (norm.getMtc() == FeeNormEnums.MtcEnum.INHERENT.getValue())
-								? (norm.getPrice() * DateUtils.getMonthDiff(house.getDueTime(), new Date()))
-								: (norm.getPrice() * DateUtils.getMonthDiff(house.getDueTime(), new Date())
-										* house.getArea());
+						if (house.getArea()!=null) {
+							money += (norm.getMtc() == FeeNormEnums.MtcEnum.INHERENT.getValue())
+									? (norm.getPrice() * DateUtils.getMonthDiff(house.getDueTime(), new Date()))
+											: (norm.getPrice() * DateUtils.getMonthDiff(house.getDueTime(), new Date())
+													* house.getArea());
+						}
 					}
 				}
 			}

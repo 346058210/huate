@@ -44,8 +44,8 @@ public class PermissionsValidateInterceptor implements HandlerInterceptor {
 		if (environment.getProperty("dev_model").equals("dev")) {
 			return true;
 		}
-		if (request.getHeader("source").equals("mobile"))
-			return true;
+		//if (request.getHeader("source").equals("mobile"))
+		//	return true;
 		// 开发模式放行
 		if (environment.getProperty("dev_model").equals("dev"))
 			return true;

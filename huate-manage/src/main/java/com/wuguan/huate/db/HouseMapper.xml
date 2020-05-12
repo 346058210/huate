@@ -43,7 +43,8 @@
 			r.id residentId,r.`name`,r.birth_date,r.sex,r.house_no houseNo,r.phone,r.movein_time,r.relation,r.idcard
 		FROM ht_house h
 		LEFT JOIN ht_resident r ON h.house_no=r.house_no
-		WHERE h.id=#{id}
+		WHERE h.id=#{id} AND r.is_del=0
+		GROUP BY r.id
 	</select>
 	<select id="getBuildings" resultType="java.lang.Integer">
 		SELECT building FROM ht_house GROUP BY building ORDER BY building ASC
